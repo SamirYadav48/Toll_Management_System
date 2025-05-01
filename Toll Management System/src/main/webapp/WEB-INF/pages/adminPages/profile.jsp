@@ -17,28 +17,28 @@
         </c:if>
 
         <!-- Profile Update Form -->
-        <form action="profile" method="post" class="profile-form">
-            <input type="hidden" name="action" value="updateProfile">
-            
-            <div class="form-group">
-                <label for="name">Full Name</label>
-                <input type="text" id="name" name="name" value="${user.name}" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="email">Email</label>
-                <input type="email" id="email" name="email" value="${user.email}" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="phone">Phone</label>
-                <input type="tel" id="phone" name="phone" value="${user.phone}">
-            </div>
-            
-            <div class="form-group">
-                <label for="position">Position</label>
-                <input type="text" id="position" name="position" value="${user.position}">
-            </div>
+        <form action="profile" method="post">
+        <input type="hidden" name="action" value="updateProfile">
+        
+        <div class="form-group">
+            <label>First Name:</label>
+            <input type="text" name="firstName" value="${user.firstName}">
+        </div>
+        
+        <div class="form-group">
+            <label>Last Name:</label>
+            <input type="text" name="lastName" value="${user.lastName}">
+        </div>
+        
+        <div class="form-group">
+            <label>Email:</label>
+            <input type="email" name="email" value="${user.email}">
+        </div>
+        
+        <div class="form-group">
+            <label>Phone:</label>
+            <input type="text" name="phone" value="${user.phone}">
+        </div>
             
             <button type="submit" class="btn">Update Profile</button>
         </form>

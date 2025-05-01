@@ -1,6 +1,7 @@
 package com.tollManagement.controller;
 
-import java.io.IOException;
+import java.io.IOException; 
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -56,18 +57,18 @@ public class LoginController extends HttpServlet {
             boolean loginStatus = loginService.loginUser(userModel);
 
             if (loginStatus) {
-                String role = loginService.getUserRole(username);
+                String account_type = loginService.getUserRole(username);
                 SessionUtil.setAttribute(request, "username", username);
-                SessionUtil.setAttribute(request, "role", role);
+                SessionUtil.setAttribute(request, "account_type", account_type);
 
                 // Cookie setup
-                CookieUtil.addCookie(response, "userRole", role, 5 * 30);
+                CookieUtil.addCookie(response, "account_type", account_type, 5 * 30);
 
                 // Redirection logic
-                String redirectPath = switch (role.toLowerCase()) {
-                    case "admin" -> "/admin/dashboard";
-                    case "commercial" -> "/customer/dashboard";
-                    default -> "/customer/dashboard";
+                String redirectPath = switch (account_type.toLowerCase()) {
+                    case "admin" -> "/AdminDashboard";
+                    case "commercial" -> "/CustomerDashboard";
+                    default -> "/CustomerDashboard";
                 };
 
                 response.sendRedirect(request.getContextPath() + redirectPath);

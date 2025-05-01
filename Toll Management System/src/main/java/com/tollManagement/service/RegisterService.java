@@ -19,7 +19,7 @@ public class RegisterService {
             try (PreparedStatement userStmt = dbConn.prepareStatement(userInsertQuery)) {
                 // Set values for user registration
                 userStmt.setString(1, userModel.getUsername());
-                userStmt.setString(2, userModel.getPasswordHash());
+                userStmt.setString(2, userModel.getPassword());
                 userStmt.setString(3, userModel.getFirstName());
                 userStmt.setString(4, userModel.getLastName());
                 userStmt.setString(5, userModel.getEmail());

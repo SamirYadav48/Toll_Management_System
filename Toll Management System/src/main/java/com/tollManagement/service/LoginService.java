@@ -1,6 +1,6 @@
 package com.tollManagement.service;
 
-import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletException; 
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -12,8 +12,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.tollManagement.config.DbConfig;
+import com.tollManagement.controller.LoginController;
 import com.tollManagement.model.UserModel;
 import com.tollManagement.util.PasswordUtil;
 
@@ -23,6 +26,7 @@ import com.tollManagement.util.PasswordUtil;
 @WebServlet(asyncSupported = true, urlPatterns = { "/LoginService" })
 public class LoginService extends HttpServlet {
     private static final long serialVersionUID = 1L;
+    private static final Logger logger = Logger.getLogger(LoginController.class.getName());
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
@@ -69,7 +73,7 @@ public class LoginService extends HttpServlet {
 
     private UserModel authenticateUser(String username, String password) 
             throws SQLException, ClassNotFoundException {
-        String query = "SELECT username, password, role, first_name, last_name, email, phone, province, postal_code, vehicle_type, vehicle_number FROM users WHERE username = ?";
+        String query = "SELECT username, password, account_type, first_name, last_name, email, phone, province, postal_code, vehicle_type, vehicle_number FROM User WHERE username = ?";
         
         try (Connection conn = DbConfig.getDbConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -80,7 +84,7 @@ public class LoginService extends HttpServlet {
             if (rs.next()) {
                 String dbUsername = rs.getString("username");
                 String dbPassword = rs.getString("password");
-                String role = rs.getString("role");
+                String account_type= rs.getString("account_type");
                 String firstName = rs.getString("first_name");
                 String lastName = rs.getString("last_name");
                 String email = rs.getString("email");
@@ -92,10 +96,10 @@ public class LoginService extends HttpServlet {
                 String citizenshipNumber = rs.getString("citizenship_number");
 
                 
-                // Verify password (assuming PasswordUtil handles hashing/encryption)
+                // Verify password
                 if (PasswordUtil.verifyPassword(password, dbPassword)) {
                     // Create and return UserModel object
-                    UserModel user = new UserModel(dbUsername, dbPassword, role, firstName, lastName, email, phone, province, postalCode, vehicleType, vehicleNumber,citizenshipNumber);
+                    UserModel user = new UserModel(dbUsername, dbPassword, account_type, firstName, lastName, email, phone, province, postalCode, vehicleType, vehicleNumber,citizenshipNumber);
                     return user;
                 }
             }
@@ -109,20 +113,20 @@ public class LoginService extends HttpServlet {
         
         switch (role.toLowerCase()) {
             case "admin":
-                redirectPath += "/admin/dashboard.jsp";
+                redirectPath += "/AdminDashboard";
                 break;
             case "commercial":
-                redirectPath += "/commercial/dashboard.jsp";
+                redirectPath += "/CustomerDashboard";
                 break;
             default: // customer
-                redirectPath += "/customer/dashboard.jsp";
+                redirectPath += "/CustomerDashboard";
         }
         response.sendRedirect(redirectPath);
     }
 
     public boolean loginUser(UserModel userModel) {
-        String query = "SELECT password FROM users WHERE username = ?";
-
+        String query = "SELECT password, account_type FROM User WHERE username = ?";
+        
         try (Connection conn = DbConfig.getDbConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
              
@@ -131,16 +135,17 @@ public class LoginService extends HttpServlet {
 
             if (rs.next()) {
                 String dbPassword = rs.getString("password");
-                return PasswordUtil.verifyPassword(userModel.getPasswordHash(), dbPassword);
+                // Verify raw input against hashed DB password
+                return PasswordUtil.verifyPassword(userModel.getPassword(), dbPassword);
             }
         } catch (SQLException | ClassNotFoundException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Database error during login", e);
         }
         return false;
     }
 
     public String getUserRole(String username) {
-        String query = "SELECT role FROM users WHERE username = ?";
+        String query = "SELECT account_type FROM User WHERE username = ?";
 
         try (Connection conn = DbConfig.getDbConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -149,7 +154,7 @@ public class LoginService extends HttpServlet {
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
-                return rs.getString("role");
+                return rs.getString("account_type");
             }
         } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();

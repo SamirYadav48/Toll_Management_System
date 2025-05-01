@@ -10,7 +10,7 @@ public class UserModel {
 
     // Fields
     private String username;
-    private String passwordHash;
+    private String password;
     private String accountType;
 
     private String firstName;
@@ -44,7 +44,7 @@ public class UserModel {
     public UserModel(String username, String password) {
         this();
         this.username = username;
-        this.setPassword(password);
+        this.password = password;
     }
 
     // Constructor for basic registration
@@ -91,7 +91,7 @@ public class UserModel {
     }
 
     public void setPassword(String password) {
-        this.passwordHash = PasswordUtil.hashPassword(password);
+        this.password = password;
     }
 
     // Getters and Setters
@@ -103,8 +103,8 @@ public class UserModel {
         this.username = username;
     }
 
-    public String getPasswordHash() {
-        return passwordHash;
+    public String getPassword() {
+        return password;
     }
 
     public String getAccountType() {
@@ -205,11 +205,6 @@ public class UserModel {
     }
 
     public void setCitizenshipNumber(String citizenshipNumber) {
-        // Optionally, you can validate the citizenship number here using a regex
-        if (citizenshipNumber.matches("^[0-9]{3}-[0-9]{9}$")) {
-            this.citizenshipNumber = citizenshipNumber;
-        } else {
-            throw new IllegalArgumentException("Invalid Citizenship Number format.");
-        }
+        this.citizenshipNumber = citizenshipNumber;
     }
 }
