@@ -1,6 +1,6 @@
 package com.tollManagement.controller;
 
-import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletException; 
 
 import com.tollManagement.config.DbConfig;
 import com.tollManagement.model.UserModel;
@@ -23,7 +23,7 @@ public class AdminProfileController extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         
-        // Get current user from session (example)
+       
         UserModel user = (UserModel) request.getSession().getAttribute("user");
         if (user == null) {
             response.sendRedirect("login");

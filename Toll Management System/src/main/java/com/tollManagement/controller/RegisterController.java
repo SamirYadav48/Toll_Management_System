@@ -1,13 +1,12 @@
 package com.tollManagement.controller;
 
-import java.io.IOException;
+import java.io.IOException; 
 //import com.tollManagement.util.ValidationUtil;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import com.tollManagement.config.DbConfig;
-//import com.tollManagement.util.ValidationUtil;
 import org.mindrot.jbcrypt.BCrypt;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;

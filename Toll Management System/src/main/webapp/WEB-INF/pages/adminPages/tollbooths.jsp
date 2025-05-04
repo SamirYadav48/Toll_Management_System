@@ -1,5 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+    <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+    <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -96,58 +98,22 @@
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>BTH-NP-001</td>
-              <td>East-West Hwy - Bardibas</td>
-              <td><span class="status active">Active</span></td>
-              <td>5 minutes ago</td>
-              <td>420</td>
-              <td>Rs. 12,600</td>
-              <td>
-                <button class="btn-icon"><i class="fas fa-edit"></i></button>
-                <button class="btn-icon"><i class="fas fa-cog"></i></button>
-                <button class="btn-icon danger"><i class="fas fa-power-off"></i></button>
-              </td>
-            </tr>
-            <tr>
-              <td>BTH-NP-002</td>
-              <td>Prithvi Hwy - Naubise</td>
-              <td><span class="status maintenance">Maintenance</span></td>
-              <td>1 hour ago</td>
-              <td>220</td>
-              <td>Rs. 6,600</td>
-              <td>
-                <button class="btn-icon"><i class="fas fa-edit"></i></button>
-                <button class="btn-icon"><i class="fas fa-cog"></i></button>
-                <button class="btn-icon success"><i class="fas fa-power-off"></i></button>
-              </td>
-            </tr>
-            <tr>
-              <td>BTH-NP-003</td>
-              <td>BP Highway - Khurkot</td>
-              <td><span class="status inactive">Inactive</span></td>
-              <td>2 days ago</td>
-              <td>0</td>
-              <td>Rs. 0</td>
-              <td>
-                <button class="btn-icon"><i class="fas fa-edit"></i></button>
-                <button class="btn-icon"><i class="fas fa-cog"></i></button>
-                <button class="btn-icon success"><i class="fas fa-power-off"></i></button>
-              </td>
-            </tr>
-            <tr>
-              <td>BTH-NP-004</td>
-              <td>Kathmandu Ring Road - Kalanki</td>
-              <td><span class="status active">Active</span></td>
-              <td>10 minutes ago</td>
-              <td>380</td>
-              <td>Rs. 11,400</td>
-              <td>
-                <button class="btn-icon"><i class="fas fa-edit"></i></button>
-                <button class="btn-icon"><i class="fas fa-cog"></i></button>
-                <button class="btn-icon danger"><i class="fas fa-power-off"></i></button>
-              </td>
-            </tr>
+            <!-- Loop through the list of toll booths dynamically -->
+            <c:forEach var="booth" items="${tollBooths}">
+                <tr>
+                  <td>${booth.boothId}</td>
+                  <td>${booth.location}</td>
+                  <td><span class="status ${booth.status}">${booth.status}</span></td>
+                  <td>${booth.lastActivity != null ? booth.lastActivity : 'N/A'}</td>
+                  <td>${booth.transactionsToday}</td>
+                  <td>${booth.revenueToday}</td>
+                  <td>
+                    <button class="btn-icon"><i class="fas fa-edit"></i></button>
+                    <button class="btn-icon"><i class="fas fa-cog"></i></button>
+                    <button class="btn-icon danger"><i class="fas fa-power-off"></i></button>
+                  </td>
+                </tr>
+            </c:forEach>
           </tbody>
         </table>
       </div>
