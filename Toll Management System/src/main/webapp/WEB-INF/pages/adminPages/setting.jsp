@@ -79,7 +79,8 @@
         <div class="settings-content">
             <!-- Settings Tabs -->
             <div class="settings-tabs">
-                <button class="tab-btn active" data-tab="general">General</button>
+            	<button class="tab-btn active" data-tab="profile">Profile</button>
+                <button class="tab-btn" data-tab="general">General</button>
                 <button class="tab-btn" data-tab="payment">Payment</button>
                 <button class="tab-btn" data-tab="notifications">Notifications</button>
                 <button class="tab-btn" data-tab="security">Security</button>
@@ -88,6 +89,50 @@
 
             <!-- Tab Contents -->
             <div class="tab-contents">
+            
+            <!-- Profile Settings -->
+				<div class="tab-content" id="profile-tab">
+    				<form class="settings-form">
+       				 <div class="form-section">
+           			 	<h3><i class="fas fa-user-circle"></i> Profile Information</h3>
+            				<div class="form-group">
+                				<label for="profile-name">Full Name</label>
+                			<input type="text" id="profile-name" value="Admin Name">
+            			</div>
+            		<div class="form-group">
+               		 	<label for="profile-email">Email Address</label>
+               		 	<input type="email" id="profile-email" value="admin@pathpay.com">
+            		</div>
+            		<div class="form-group">
+                		<label for="profile-avatar">Profile Picture</label>
+                		<input type="file" id="profile-avatar" accept="image/*">
+            		</div>
+        			</div>
+
+        			<div class="form-section">
+           		 	<h3><i class="fas fa-key"></i> Change Password</h3>
+            		<div class="form-group">
+               		<label for="current-password">Current Password</label>
+                		<input type="password" id="current-password" placeholder="Enter current password">
+            		</div>
+           		 <div class="form-group">
+                		<label for="new-password">New Password</label>
+                		<input type="password" id="new-password" placeholder="Enter new password">
+            		</div>
+            		<div class="form-group">
+                		<label for="confirm-password">Confirm New Password</label>
+                		<input type="password" id="confirm-password" placeholder="Confirm new password">
+            		</div>
+        		</div>
+
+        		<div class="form-actions">
+            			<button type="button" class="btn btn-secondary">Cancel</button>
+            		<button type="submit" class="btn btn-primary">Update Profile</button>
+        		</div>
+    			</form>
+			</div>
+            
+            
                 <!-- General Settings -->
                 <div class="tab-content active" id="general-tab">
                     <form class="settings-form">

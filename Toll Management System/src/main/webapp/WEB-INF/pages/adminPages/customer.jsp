@@ -62,18 +62,16 @@
         </div>
         <div class="user-profile">
           <img src="admin-avatar.jpg" alt="Admin Avatar"/>
-          <span>Admin</span>
+          <span><a href="${pageContext.request.contextPath}/AdminProfileController"><i class="fas fa-user"></i>Admin</a></span>
           <i class="fas fa-chevron-down"></i>
         </div>
-        <a href="${pageContext.request.contextPath}/login" class="logout-btn"><i class="fas fa-sign-out-alt"></i></a>
+        
       </div>
     </header>
 
     <div class="dashboard-content">
       <div class="action-bar">
-        <div class="results-count">
-          Showing <span id="showingCount">1-10</span> of <span id="totalCount">48</span> customers
-        </div>
+        
         <div class="actions">
           
           <div class="filters">

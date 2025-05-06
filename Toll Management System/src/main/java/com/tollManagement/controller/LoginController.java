@@ -58,6 +58,7 @@ public class LoginController extends HttpServlet {
 
             if (loginStatus) {
                 String account_type = loginService.getUserRole(username);
+                SessionUtil.setAttribute(request, "user", userModel);
                 SessionUtil.setAttribute(request, "username", username);
                 SessionUtil.setAttribute(request, "account_type", account_type);
 
