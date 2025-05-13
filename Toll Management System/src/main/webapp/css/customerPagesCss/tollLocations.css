@@ -334,6 +334,101 @@ body {
     color: #ecf0f1;
 }
 
+.toll-locations-container {
+    padding: 20px;
+}
+
+.filters {
+    margin-bottom: 20px;
+}
+
+.filters select {
+    max-width: 200px;
+}
+
+.toll-locations-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 20px 0;
+}
+
+.toll-location-card {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    transition: transform 0.2s ease;
+}
+
+.toll-location-card:hover {
+    transform: translateY(-5px);
+}
+
+.location-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.location-header h3 {
+    margin: 0;
+    color: #333;
+    font-size: 1.2rem;
+}
+
+.status-badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.status-badge.active {
+    background-color: #e6f4ea;
+    color: #1e7e34;
+}
+
+.status-badge.inactive {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.status-badge.maintenance {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.location-details {
+    color: #666;
+}
+
+.location-name {
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+    color: #444;
+}
+
+.last-updated {
+    font-size: 0.9rem;
+    color: #888;
+    margin: 0;
+}
+
+/* Status-specific card styles */
+.toll-location-card.active {
+    border-left: 4px solid #28a745;
+}
+
+.toll-location-card.inactive {
+    border-left: 4px solid #dc3545;
+}
+
+.toll-location-card.maintenance {
+    border-left: 4px solid #ffc107;
+} 
+
 /* ========== RESPONSIVE ADJUSTMENTS ========== */
 @media (max-width: 1200px) {
     .toll-locations-container {

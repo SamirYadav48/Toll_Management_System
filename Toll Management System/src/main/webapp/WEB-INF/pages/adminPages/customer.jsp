@@ -70,26 +70,6 @@
     </header>
 
     <div class="dashboard-content">
-      <div class="action-bar">
-        
-        <div class="actions">
-          
-          <div class="filters">
-            <select id="statusFilter">
-              <option value="all">All Status</option>
-              <option value="active">Active</option>
-              <option value="inactive">Inactive</option>
-              <option value="suspended">Suspended</option>
-            </select>
-            <select id="sortBy">
-              <option value="newest">Newest First</option>
-              <option value="oldest">Oldest First</option>
-              <option value="name-asc">Name (A-Z)</option>
-              <option value="name-desc">Name (Z-A)</option>
-            </select>
-          </div>
-        </div>
-      </div>
 
       <!-- Customers Table -->
       <div class="table-container">

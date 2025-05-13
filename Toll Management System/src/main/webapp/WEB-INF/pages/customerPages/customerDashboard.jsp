@@ -1,5 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -19,9 +21,9 @@
             <div class="header-right">
                 <div class="user-info">
                 <a href="${pageContext.request.contextPath}/CustomerSettingsController" class="user-name-link">
-                    <span class="user-name">Bina Karki</span>
+                    <span class="user-name">${user.firstName} ${user.lastName}</span>
                     </a>
-                    <img src="user-avatar.jpg" alt="User Avatar" class="user-avatar">
+                    <img src="${pageContext.request.contextPath}/resources/user-avatar.jpg" alt="User Avatar" class="user-avatar">
                 </div>
             </div>
         </header>
@@ -45,7 +47,7 @@
                 <h2>Dashboard Overview</h2>
                 <div class="date-display">
                     <i class="fas fa-calendar-alt"></i>
-                    <span id="current-date">April 15, 2025</span>
+                    <span id="current-date"></span>
                 </div>
             </div>
 
@@ -56,8 +58,8 @@
                     </div>
                     <div class="card-content">
                         <h3>Account Balance</h3>
-                        <p class="amount">NPR 1,250.00</p>
-                        <a href="#" class="top-up-btn">Top Up Now</a>
+                        <p class="amount">NPR ${accountBalance}</p>
+                        <a href="${pageContext.request.contextPath}/RechargeWalletController" class="top-up-btn">Top Up Now</a>
                     </div>
                 </div>
 
@@ -67,8 +69,8 @@
                     </div>
                     <div class="card-content">
                         <h3>Registered Vehicles</h3>
-                        <p class="count">2 Vehicles</p>
-                        <a href="#" class="manage-btn">Manage Vehicles</a>
+                        <p class="count">${vehicleCount} Vehicles</p>
+                        <a href="${pageContext.request.contextPath}/VehicleController" class="manage-btn">Manage Vehicles</a>
                     </div>
                 </div>
 
@@ -78,8 +80,8 @@
                     </div>
                     <div class="card-content">
                         <h3>Recent Toll Passes</h3>
-                        <p class="count">5 Passes (This Month)</p>
-                        <a href="#" class="view-all-btn">View All</a>
+                        <p class="count">${recentPasses} Passes (This Month)</p>
+                        <a href="${pageContext.request.contextPath}/PaymentHistoryController" class="view-all-btn">View All</a>
                     </div>
                 </div>
             </div>
@@ -87,7 +89,7 @@
             <div class="recent-activity">
                 <div class="section-header">
                     <h3>Recent Toll Transactions</h3>
-                    <a href="#" class="view-all">View All</a>
+                    <a href="${pageContext.request.contextPath}/PaymentHistoryController" class="view-all">View All</a>
                 </div>
                 <table class="activity-table">
                     <thead>
@@ -100,50 +102,35 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>Apr 14, 2025 09:15 AM</td>
-                            <td>Nagdhunga Toll Plaza</td>
-                            <td>Ba 1 Cha 1234</td>
-                            <td>550.00</td>
-                            <td><span class="status paid">Paid</span></td>
-                        </tr>
-                        <tr>
-                            <td>Apr 12, 2025 03:45 PM</td>
-                            <td>Thankot Toll Plaza</td>
-                            <td>Ba 1 Cha 1234</td>
-                            <td>550.00</td>
-                            <td><span class="status paid">Paid</span></td>
-                        </tr>
-                        <tr>
-                            <td>Apr 10, 2025 11:20 AM</td>
-                            <td>Kalanki Toll Plaza</td>
-                            <td>Ba 5 Pa 5678</td>
-                            <td>350.00</td>
-                            <td><span class="status pending">Pending</span></td>
-                        </tr>
-                        <tr>
-                            <td>Apr 8, 2025 07:30 AM</td>
-                            <td>Pharping Toll Plaza</td>
-                            <td>Ba 1 Cha 1234</td>
-                            <td>550.00</td>
-                            <td><span class="status paid">Paid</span></td>
-                        </tr>
-                        <tr>
-                            <td>Apr 5, 2025 05:15 PM</td>
-                            <td>Koteshwor Toll Plaza</td>
-                            <td>Ba 5 Pa 5678</td>
-                            <td>350.00</td>
-                            <td><span class="status paid">Paid</span></td>
-                        </tr>
+                        <c:forEach items="${recentTransactions}" var="transaction">
+                            <tr>
+                                <td><fmt:formatDate value="${transaction.date}" pattern="MMM dd, yyyy hh:mm a"/></td>
+                                <td>${transaction.location}</td>
+                                <td>${transaction.vehicle}</td>
+                                <td>${transaction.amount}</td>
+                                <td><span class="status ${transaction.status.toLowerCase()}">${transaction.status}</span></td>
+                            </tr>
+                        </c:forEach>
+                        <c:if test="${empty recentTransactions}">
+                            <tr>
+                                <td colspan="5" class="no-transactions">No recent transactions found</td>
+                            </tr>
+                        </c:if>
                     </tbody>
                 </table>
             </div>
 
             <div class="toll-info">
-                <div class="toll-map">
-                    <h3>Major Toll Plazas in Nepal</h3>
-                    <div class="map-placeholder">
-                        <img src="nepal-toll-map.jpg" alt="Nepal Toll Plaza Map">
+                <div class="stat-card toll-locations-card">
+                    <div class="card-icon">
+                        <i class="fas fa-map-marked-alt"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>Toll Locations</h3>
+                        <p class="count">View All Toll Plazas</p>
+                        <button onclick="window.location.href='${pageContext.request.contextPath}/TollLocationsController'" class="view-locations-btn">
+                            <i class="fas fa-map-marked-alt"></i> View Locations
+                        </button>
                     </div>
                 </div>
                 <div class="toll-rates">
@@ -157,31 +144,18 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>Car/Jeep/Van</td>
-                                <td>550</td>
-                                <td>5,500</td>
-                            </tr>
-                            <tr>
-                                <td>Motorcycle</td>
-                                <td>100</td>
-                                <td>1,000</td>
-                            </tr>
-                            <tr>
-                                <td>Mini Bus</td>
-                                <td>700</td>
-                                <td>7,000</td>
-                            </tr>
-                            <tr>
-                                <td>Bus/Truck</td>
-                                <td>1,100</td>
-                                <td>11,000</td>
-                            </tr>
-                            <tr>
-                                <td>Heavy Truck</td>
-                                <td>1,650</td>
-                                <td>16,500</td>
-                            </tr>
+                            <c:forEach items="${tollRates}" var="rate">
+                                <tr>
+                                    <td>${rate.vehicleType}</td>
+                                    <td>${rate.singlePassRate}</td>
+                                    <td>${rate.monthlyPassRate}</td>
+                                </tr>
+                            </c:forEach>
+                            <c:if test="${empty tollRates}">
+                                <tr>
+                                    <td colspan="3" class="no-rates">No toll rates available</td>
+                                </tr>
+                            </c:if>
                         </tbody>
                     </table>
                 </div>
@@ -197,5 +171,93 @@
             </div>
         </footer>
     </div>
+
+    <!-- Add Leaflet CSS and JS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    
+    <!-- Add custom map script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set current date
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            const currentDate = new Date().toLocaleDateString('en-US', options);
+            document.getElementById('current-date').textContent = currentDate;
+
+            try {
+                // Check if map container exists
+                const mapContainer = document.getElementById('map');
+                if (!mapContainer) {
+                    console.error('Map container not found!');
+                    return;
+                }
+
+                // Initialize the map
+                const map = L.map('map').setView([27.7172, 85.3240], 10); // Centered on Kathmandu
+
+                // Add OpenStreetMap tiles
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19,
+                    attribution: '© OpenStreetMap contributors'
+                }).addTo(map);
+
+                // Add toll plaza markers
+                const tollPlazas = [
+                    {
+                        name: "Nagdhunga Toll Plaza",
+                        location: [27.6828, 85.1833],
+                        status: "Active",
+                        traffic: "Medium"
+                    },
+                    {
+                        name: "Thankot Toll Plaza",
+                        location: [27.6833, 85.2000],
+                        status: "Active",
+                        traffic: "High"
+                    },
+                    {
+                        name: "Kalanki Toll Plaza",
+                        location: [27.7000, 85.2833],
+                        status: "Active",
+                        traffic: "High"
+                    },
+                    {
+                        name: "Pharping Toll Plaza",
+                        location: [27.6167, 85.2833],
+                        status: "Active",
+                        traffic: "Low"
+                    },
+                    {
+                        name: "Koteshwor Toll Plaza",
+                        location: [27.6833, 85.3333],
+                        status: "Active",
+                        traffic: "Medium"
+                    }
+                ];
+
+                // Add markers for each toll plaza
+                tollPlazas.forEach(plaza => {
+                    const marker = L.marker(plaza.location).addTo(map);
+                    
+                    // Create popup content
+                    const popupContent = `
+                        <div class="toll-popup">
+                            <h4>${plaza.name}</h4>
+                            <p><strong>Status:</strong> ${plaza.status}</p>
+                            <p><strong>Traffic:</strong> ${plaza.traffic}</p>
+                            <a href="${pageContext.request.contextPath}/TollLocationsController?plaza=${plaza.name}" 
+                               class="view-details">View Details</a>
+                        </div>
+                    `;
+                    
+                    marker.bindPopup(popupContent);
+                });
+
+                console.log('Map initialized successfully');
+            } catch (error) {
+                console.error('Error initializing map:', error);
+            }
+        });
+    </script>
 </body>
 </html>

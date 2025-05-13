@@ -432,6 +432,47 @@ body {
     margin-top: 30px;
 }
 
+/* Add to your tollbooths.css */
+.alert {
+  padding: 15px;
+  margin-bottom: 20px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+}
+
+.alert-success {
+  color: #3c763d;
+  background-color: #dff0d8;
+  border-color: #d6e9c6;
+}
+
+.alert-danger {
+  color: #a94442;
+  background-color: #f2dede;
+  border-color: #ebccd1;
+}
+
+.status {
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.status.Active {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.status.Inactive {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.status.Maintenance {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
 /* Responsive Styles */
 @media (max-width: 992px) {
     .sidebar {

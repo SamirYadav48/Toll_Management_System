@@ -19,9 +19,9 @@
             <div class="header-right">
                 <div class="user-info">
                     <a href="${pageContext.request.contextPath}/CustomerSettingsController" class="user-name-link">
-                        <span class="user-name">Bina Karki</span>
+                        <span class="user-name">${user.firstName} ${user.lastName}</span>
                     </a>
-                    <img src="user-avatar.jpg" alt="User Avatar" class="user-avatar">
+                    <img src="${pageContext.request.contextPath}/resources/user-avatar.jpg" alt="User Avatar" class="user-avatar">
                 </div>
             </div>
         </header>
@@ -47,9 +47,23 @@
                 <h2>Recharge Wallet</h2>
                 <div class="wallet-balance">
                     <span>Current Balance:</span>
-                    <span class="amount">NPR 1,250.00</span>
+                    <span class="amount">NPR ${balance}</span>
                 </div>
             </div>
+
+            <!-- Success/Error Messages -->
+            <c:if test="${not empty successMessage}">
+                <div class="alert success">
+                    <i class="fas fa-check-circle"></i>
+                    ${successMessage}
+                </div>
+            </c:if>
+            <c:if test="${not empty errorMessage}">
+                <div class="alert error">
+                    <i class="fas fa-exclamation-circle"></i>
+                    ${errorMessage}
+                </div>
+            </c:if>
 
             <div class="recharge-container">
                 <div class="recharge-options">
@@ -131,34 +145,6 @@
                             <i class="fas fa-bolt"></i> Recharge Now
                         </button>
                     </div>
-
-                    <div class="auto-recharge">
-                        <h3>Auto Recharge Settings</h3>
-                        <div class="auto-toggle">
-                            <label class="switch">
-                                <input type="checkbox" id="autoRechargeToggle">
-                                <span class="slider round"></span>
-                            </label>
-                            <span>Enable Auto Recharge</span>
-                        </div>
-                        <div class="auto-settings" id="autoSettings" style="display: none;">
-                            <div class="form-group">
-                                <label>When balance falls below:</label>
-                                <div class="input-group">
-                                    <span class="input-prefix">NPR</span>
-                                    <input type="number" id="thresholdAmount" value="500" min="100" step="100">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label>Recharge Amount:</label>
-                                <div class="input-group">
-                                    <span class="input-prefix">NPR</span>
-                                    <input type="number" id="autoRechargeAmount" value="1000" min="100" step="100">
-                                </div>
-                            </div>
-                            <button class="secondary-btn">Save Settings</button>
-                        </div>
-                    </div>
                 </div>
             </div>
         </main>
@@ -180,8 +166,6 @@
         const customAmountInput = document.getElementById('customAmount');
         const paymentMethodRadios = document.querySelectorAll('input[name="paymentMethod"]');
         const rechargeBtn = document.getElementById('rechargeBtn');
-        const autoRechargeToggle = document.getElementById('autoRechargeToggle');
-        const autoSettings = document.getElementById('autoSettings');
         
         // Summary elements
         const summaryAmount = document.getElementById('summaryAmount');
@@ -229,15 +213,6 @@
             });
         });
         
-        // Auto recharge toggle
-        autoRechargeToggle.addEventListener('change', function() {
-            if (this.checked) {
-                autoSettings.style.display = 'block';
-            } else {
-                autoSettings.style.display = 'none';
-            }
-        });
-        
         // Update summary function
         function updateSummary() {
             if (selectedAmount > 0) {
@@ -249,16 +224,16 @@
                 
                 const total = selectedAmount + fee;
                 
-                // Update summary
+                // Update summary display
                 summaryAmount.textContent = `NPR ${selectedAmount.toLocaleString()}`;
-                summaryMethod.textContent = getMethodName(selectedMethod);
+                summaryMethod.textContent = selectedMethod.charAt(0).toUpperCase() + selectedMethod.slice(1);
                 serviceFee.textContent = `NPR ${fee.toLocaleString()}`;
                 summaryTotal.textContent = `NPR ${total.toLocaleString()}`;
                 
                 // Enable recharge button
                 rechargeBtn.disabled = false;
             } else {
-                // Reset summary
+                // Reset summary display
                 summaryAmount.textContent = 'NPR 0';
                 summaryMethod.textContent = 'Not selected';
                 serviceFee.textContent = 'NPR 0';
@@ -269,43 +244,41 @@
             }
         }
         
-        // Helper function to get payment method name
-        function getMethodName(method) {
-            switch(method) {
-                case 'esewa': return 'eSewa';
-                case 'khalti': return 'Khalti';
-                case 'card': return 'Credit/Debit Card';
-                case 'connectips': return 'Connect IPS';
-                default: return 'Unknown';
-            }
-        }
-        
-        // Recharge button click
+        // Handle recharge button click
         rechargeBtn.addEventListener('click', function() {
-            if (selectedAmount < 100) {
-                alert('Minimum recharge amount is NPR 100');
-                return;
+            if (selectedAmount > 0) {
+                // Create form data
+                const formData = new FormData();
+                formData.append('amount', selectedAmount);
+                formData.append('paymentMethod', selectedMethod);
+                
+                // Submit form
+                fetch('${pageContext.request.contextPath}/RechargeWalletController', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => {
+                    if (response.redirected) {
+                        window.location.href = response.url;
+                    } else {
+                        return response.text().then(text => {
+                            if (text.includes('success')) {
+                                window.location.reload();
+                            } else {
+                                const errorMsg = text.includes('error=') ? 
+                                    decodeURIComponent(text.split('error=')[1]) : 
+                                    'Failed to recharge wallet. Please try again.';
+                                alert(errorMsg);
+                            }
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Network error occurred. Please check your connection and try again.');
+                });
             }
-            
-            // In a real app, this would redirect to payment gateway
-            const paymentUrl = getPaymentUrl(selectedMethod, selectedAmount);
-            alert(`Redirecting to ${getMethodName(selectedMethod)} payment page...`);
-            
-            // Simulate successful payment after delay
-            setTimeout(() => {
-                const currentBalance = 1250; // This would come from server in real app
-                const newBalance = currentBalance + selectedAmount;
-                document.querySelector('.wallet-balance .amount').textContent = 
-                    `NPR ${newBalance.toLocaleString()}`;
-                alert(`Recharge successful! Your new balance is NPR ${newBalance.toLocaleString()}`);
-            }, 2000);
         });
-        
-        // Helper function to get payment URL (simulated)
-        function getPaymentUrl(method, amount) {
-            // In a real app, these would be actual payment gateway URLs
-            return `#${method}-payment?amount=${amount}`;
-        }
     });
     </script>
 </body>

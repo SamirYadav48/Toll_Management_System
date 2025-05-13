@@ -103,10 +103,7 @@
                		 	<label for="profile-email">Email Address</label>
                		 	<input type="email" id="profile-email" value="admin@pathpay.com">
             		</div>
-            		<div class="form-group">
-                		<label for="profile-avatar">Profile Picture</label>
-                		<input type="file" id="profile-avatar" accept="image/*">
-            		</div>
+           
         			</div>
 
         			<div class="form-section">
@@ -200,28 +197,28 @@
                                 <label for="car-rate">Car Rate (per pass)</label>
                                 <div class="input-group">
                                     <span class="input-prefix">NPR</span>
-                                    <input type="number" id="car-rate" value="100">
+                                    <input type="number" id="car-rate" value="25">
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label for="truck-rate">Truck Rate (per pass)</label>
                                 <div class="input-group">
                                     <span class="input-prefix">NPR</span>
-                                    <input type="number" id="truck-rate" value="250">
+                                    <input type="number" id="truck-rate" value="25">
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label for="bus-rate">Bus Rate (per pass)</label>
                                 <div class="input-group">
                                     <span class="input-prefix">NPR</span>
-                                    <input type="number" id="bus-rate" value="200">
+                                    <input type="number" id="bus-rate" value="20">
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label for="motorcycle-rate">Motorcycle Rate (per pass)</label>
                                 <div class="input-group">
                                     <span class="input-prefix">NPR</span>
-                                    <input type="number" id="motorcycle-rate" value="50">
+                                    <input type="number" id="motorcycle-rate" value="15">
                                 </div>
                             </div>
                         </div>

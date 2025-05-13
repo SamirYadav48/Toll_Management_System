@@ -36,7 +36,7 @@ public class RegisterService {
 
                 // If user inserted successfully, insert vehicle data
                 if (userRowsAffected > 0) {
-                    String vehicleInsertQuery = "INSERT INTO vehicles (vehicle_type, vehicle_number, citizenship_number) VALUES (?, ?, ?)";
+                    String vehicleInsertQuery = "INSERT INTO vehicle (vehicle_type, vehicle_number, citizenship_number) VALUES (?, ?, ?)";
 
                     try (PreparedStatement vehicleStmt = dbConn.prepareStatement(vehicleInsertQuery)) {
                        

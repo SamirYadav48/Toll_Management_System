@@ -7,11 +7,14 @@ public class TollBoothModel {
     private String location;
     private String status;       // Active, Inactive, Maintenance
     private String boothType;    // Standard, Express, etc.
+    private String province;     // Province where the toll booth is located
+    private double latitude;     // Latitude coordinate
+    private double longitude;    // Longitude coordinate
     private Timestamp createdAt;
     private Timestamp updatedAt;
     
     private Timestamp lastActivity;     // Recent transaction time
-    private int transactionsToday;      // Count of today’s transactions
+    private int transactionsToday;      // Count of today's transactions
     private double revenueToday;        // Total revenue today
 
     // Constructors
@@ -20,11 +23,16 @@ public class TollBoothModel {
     }
 
     public TollBoothModel(String boothId, String location, String status, String boothType,
-                     Timestamp lastActivity,Timestamp createdAt, Timestamp updatedAt, int transactionsToday, double revenueToday) {
+                     String province, double latitude, double longitude,
+                     Timestamp lastActivity, Timestamp createdAt, Timestamp updatedAt, 
+                     int transactionsToday, double revenueToday) {
         this.boothId = boothId;
         this.location = location;
         this.status = status;
         this.boothType = boothType;
+        this.province = province;
+        this.latitude = latitude;
+        this.longitude = longitude;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.lastActivity = lastActivity;
@@ -63,6 +71,30 @@ public class TollBoothModel {
 
     public void setBoothType(String boothType) {
         this.boothType = boothType;
+    }
+
+    public String getProvince() {
+        return province;
+    }
+
+    public void setProvince(String province) {
+        this.province = province;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
     }
 
     public Timestamp getCreatedAt() {
@@ -104,7 +136,5 @@ public class TollBoothModel {
     public void setRevenueToday(double revenueToday) {
         this.revenueToday = revenueToday;
     }
-
-	
 }
 

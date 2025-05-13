@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -36,10 +36,7 @@
                 <h1>Transaction History</h1>
             </div>
             <div class="header-right">
-                <div class="search-box">
-                    <input type="text" placeholder="Search..."><i class="fas fa-search"></i>
-                </div>
-                <div class="user-profile">
+            	<div class="user-profile">
                     <img src="admin-avatar.jpg" alt="Admin Avatar"><span>Admin</span><i class="fas fa-chevron-down"></i>
                 </div>
                 <a href="${pageContext.request.contextPath}/login" class="logout-btn"><i class="fas fa-sign-out-alt"></i></a>
@@ -47,14 +44,7 @@
         </header>
 
         <!-- Filters -->
-        <div class="filters">
-            <select>
-                <option>All Highways</option>
-                <option>East-West Highway</option>
-                <option>Prithvi Highway</option>
-            </select>
-            <input type="date">
-        </div>
+       
 
         <!-- Transactions Table -->
         <div class="table-container">

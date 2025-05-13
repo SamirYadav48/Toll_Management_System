@@ -108,117 +108,333 @@ body {
 
 /* ========== SETTINGS PAGE SPECIFIC ========== */
 .settings-container {
-    background-color: white;
+    background: #ffffff;
     border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-    overflow: hidden;
-    width: 100%;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    margin: 1rem 0;
 }
 
-.settings-tabs {
-    display: flex;
-    border-bottom: 1px solid #ecf0f1;
+/* Navigation Styles */
+.settings-nav {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
 }
 
-.tab-btn {
-    padding: 15px 25px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-weight: 500;
-    color: #7f8c8d;
-    position: relative;
+.settings-nav .nav-link {
+    color: #495057;
+    padding: 0.8rem 1rem;
+    border-radius: 6px;
+    margin-bottom: 0.5rem;
+    transition: all 0.3s ease;
 }
 
-.tab-btn.active {
-    color: #3498db;
+.settings-nav .nav-link:hover {
+    background: #e9ecef;
+    color: #212529;
 }
 
-.tab-btn.active::after {
-    content: '';
-    position: absolute;
-    bottom: -1px;
-    left: 0;
-    width: 100%;
-    height: 3px;
-    background-color: #3498db;
+.settings-nav .nav-link.active {
+    background: #007bff;
+    color: #ffffff;
 }
 
+/* Content Area Styles */
 .settings-content {
-    padding: 0;
-    width: 100%;
+    background: #ffffff;
+    border-radius: 8px;
+    padding: 2rem;
 }
 
 .tab-content {
-    display: none;
-    width: 100%;
-    padding: 0;
+    padding: 1rem 0;
 }
 
-.tab-content.active {
-    display: block;
-}
-
-.settings-form {
-    width: 100%;
-    max-width: 700px;
-    padding: 25px;
-    margin: 0; /* Remove auto margins */
-}
-
-/* ========== FORM ELEMENTS ========== */
+/* Form Styles */
 .form-group {
-    margin-bottom: 20px;
-    text-align: left;
-    width: 100%;
+    margin-bottom: 1.5rem;
 }
 
 .form-group label {
+    font-weight: 500;
+    color: #495057;
+    margin-bottom: 0.5rem;
     display: block;
-    margin-bottom: 8px;
+}
+
+.form-control {
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    padding: 0.75rem;
+    transition: border-color 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.form-select {
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    padding: 0.75rem;
+    transition: border-color 0.3s ease;
+}
+
+.form-select:focus {
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Checkbox Styles */
+.form-check {
+    margin-bottom: 1rem;
+}
+
+.form-check-input {
+    width: 1.2rem;
+    height: 1.2rem;
+    margin-top: 0.2rem;
+}
+
+.form-check-input:checked {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+.form-check-label {
+    margin-left: 0.5rem;
+    color: #495057;
+}
+
+/* Button Styles */
+.btn-primary {
+    background-color: #007bff;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    transform: translateY(-1px);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+/* Alert Styles */
+.alert {
+    border-radius: 6px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+    color: #155724;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+    color: #721c24;
+}
+
+/* Section Headers */
+h2.mb-4 {
+    color: #212529;
+    font-weight: 600;
+    margin-bottom: 1.5rem !important;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #e9ecef;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .settings-container {
+        padding: 1rem;
+    }
+
+    .settings-content {
+        padding: 1rem;
+    }
+
+    .settings-nav {
+        margin-bottom: 1rem;
+    }
+
+    .form-group {
+        margin-bottom: 1rem;
+    }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    .settings-container,
+    .settings-content {
+        background: #2d2d2d;
+    }
+
+    .settings-nav {
+        background: #333333;
+    }
+
+    .settings-nav .nav-link {
+        color: #e0e0e0;
+    }
+
+    .settings-nav .nav-link:hover {
+        background: #404040;
+    }
+
+    .form-group label {
+        color: #e0e0e0;
+    }
+
+    .form-control,
+    .form-select {
+        background-color: #333333;
+        border-color: #404040;
+        color: #e0e0e0;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        background-color: #333333;
+        border-color: #007bff;
+    }
+
+    .form-check-label {
+        color: #e0e0e0;
+    }
+
+    h2.mb-4 {
+        color: #e0e0e0;
+        border-bottom-color: #404040;
+    }
+}
+
+/* Animation Effects */
+.nav-link,
+.btn-primary,
+.form-control,
+.form-select {
+    transition: all 0.3s ease;
+}
+
+/* Accessibility Improvements */
+.form-control:focus,
+.form-select:focus,
+.btn-primary:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+}
+
+/* Custom Scrollbar */
+.settings-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.settings-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.settings-container::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.settings-container::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Header Styles */
+.content-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.content-header h2 {
+    margin: 0;
+    color: #212529;
+    font-size: 1.75rem;
+}
+
+.date-display {
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.date-display i {
+    margin-right: 0.5rem;
+}
+
+/* Form Row Styles */
+.row {
+    margin: 0 -0.75rem;
+}
+
+.col-md-6 {
+    padding: 0 0.75rem;
+}
+
+/* Input Focus Effects */
+.form-control:focus,
+.form-select:focus {
+    outline: none;
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
+}
+
+/* Checkbox Custom Styles */
+.form-check-input:checked {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+/* Button Hover Effects */
+.btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Navigation Active State */
+.nav-link.active {
     font-weight: 500;
 }
 
-.form-group input,
-.form-group select,
-.form-group textarea {
+/* Form Validation Styles */
+.form-control.is-invalid {
+    border-color: #dc3545;
+    padding-right: calc(1.5em + 0.75rem);
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right calc(0.375em + 0.1875rem) center;
+    background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+}
+
+.invalid-feedback {
+    display: none;
     width: 100%;
-    padding: 12px 15px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    font-size: 1rem;
+    margin-top: 0.25rem;
+    font-size: 0.875em;
+    color: #dc3545;
 }
 
-/* ========== PROFILE PICTURE ========== */
-.profile-pic-container {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-}
-
-.profile-pic {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 3px solid #3498db;
-}
-
-/* ========== BUTTONS ========== */
-.form-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 15px;
-    margin-top: 30px;
-}
-
-.save-btn {
-    background-color: #3498db;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
+.form-control.is-invalid ~ .invalid-feedback {
+    display: block;
 }
 
 /* ========== FOOTER ========== */

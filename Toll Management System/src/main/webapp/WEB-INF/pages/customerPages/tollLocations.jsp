@@ -1,4 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -19,9 +20,9 @@
             <div class="header-right">
                 <div class="user-info">
                     <a href="${pageContext.request.contextPath}/CustomerSettingsController" class="user-name-link">
-                        <span class="user-name">Bina Karki</span>
+                        <span class="user-name">${sessionScope.user.firstName} ${sessionScope.user.lastName}</span>
                     </a>
-                    <img src="user-avatar.jpg" alt="User Avatar" class="user-avatar">
+                    <img src="${pageContext.request.contextPath}/resources/user-avatar.jpg" alt="User Avatar" class="user-avatar">
                 </div>
             </div>
         </header>
@@ -46,9 +47,21 @@
                 <div class="map-controls">
                     <div class="search-box">
                         <i class="fas fa-search"></i>
-                        <input type="text" placeholder="Search toll plazas...">
+                        <input type="text" id="searchInput" placeholder="Search toll plazas...">
                     </div>
-                    <button class="refresh-btn">
+                    <div class="filter-box">
+                        <select id="provinceFilter">
+                            <option value="">All Provinces</option>
+                            <option value="Koshi">Province 1 (Koshi)</option>
+                            <option value="Madhesh">Province 2 (Madhesh)</option>
+                            <option value="Bagmati">Province 3 (Bagmati)</option>
+                            <option value="Gandaki">Province 4 (Gandaki)</option>
+                            <option value="Lumbini">Province 5 (Lumbini)</option>
+                            <option value="Karnali">Province 6 (Karnali)</option>
+                            <option value="Sudurpashchim">Province 7 (Sudurpashchim)</option>
+                        </select>
+                    </div>
+                    <button class="refresh-btn" onclick="refreshData()">
                         <i class="fas fa-sync-alt"></i> Refresh
                     </button>
                 </div>
@@ -62,24 +75,28 @@
                         <h3>All Toll Plazas</h3>
                         <div class="sort-options">
                             <span>Sort by:</span>
-                            <select>
-                                <option>Distance</option>
-                                <option selected>Alphabetical</option>
-                                <option>Traffic Level</option>
+                            <select id="sortSelect">
+                                <option value="name">Alphabetical</option>
+                                <option value="status">Status</option>
+                                <option value="province">Province</option>
                             </select>
                         </div>
                     </div>
                     
                     <div class="toll-items">
-                        <div class="toll-item active">
-                            <div class="toll-name">Nagdhunga Toll Plaza</div>
-                            <div class="toll-distance">12 km away</div>
-                            <div class="toll-rates">Car: NPR 550 | Bike: NPR 100</div>
-                            <div class="toll-traffic">
-                                <span class="traffic-level medium">Medium Traffic</span>
+                        <c:forEach items="${tollBooths}" var="booth">
+                            <div class="toll-item" data-province="${booth.province}" data-status="${booth.status}">
+                                <div class="toll-name">${booth.location}</div>
+                                <div class="toll-id">${booth.boothId}</div>
+                                <div class="toll-status">
+                                    <span class="status-badge ${booth.status.toLowerCase()}">${booth.status}</span>
+                                </div>
+                                <div class="toll-details">
+                                    <span class="province">${booth.province}</span>
+                                    <span class="last-updated">Updated: ${booth.updatedAt}</span>
+                                </div>
                             </div>
-                        </div>
-                        <!-- More toll items would go here -->
+                        </c:forEach>
                     </div>
                 </div>
             </div>
@@ -99,71 +116,105 @@
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Initialize map
-        const map = L.map('toll-map').setView([27.7172, 85.3240], 12); // Centered on Kathmandu
+        const map = L.map('toll-map').setView([27.7172, 85.3240], 7); // Centered on Nepal
         
         // Add tile layer (OpenStreetMap)
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
 
-        // Sample toll plaza markers (in a real app, these would come from an API)
-        const tollPlazas = [
-            {
-                name: "Nagdhunga Toll Plaza",
-                coords: [27.6942, 85.2295],
-                rates: "Car: NPR 550 | Bike: NPR 100",
-                traffic: "medium"
-            },
-            // More plazas would be added here
+        // Get toll locations from JSP
+        const tollBooths = [
+            <c:forEach items="${tollBooths}" var="booth" varStatus="status">
+                {
+                    id: "${booth.boothId}",
+                    name: "${booth.location}",
+                    status: "${booth.status}",
+                    province: "${booth.province}",
+                    coords: [${booth.latitude}, ${booth.longitude}]
+                }${!status.last ? ',' : ''}
+            </c:forEach>
         ];
 
         // Add markers to map
-        tollPlazas.forEach(plaza => {
-            const marker = L.marker(plaza.coords).addTo(map)
-                .bindPopup(`<b>${plaza.name}</b><br>${plaza.rates}`);
-            
-            // Click event for markers
-            marker.on('click', function() {
-                // Highlight corresponding list item
-                document.querySelectorAll('.toll-item').forEach(item => {
-                    item.classList.remove('active');
-                    if (item.querySelector('.toll-name').textContent === plaza.name) {
-                        item.classList.add('active');
-                        item.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                    }
-                });
-            });
+        const markers = {};
+        tollBooths.forEach(booth => {
+            const marker = L.marker(booth.coords).addTo(map)
+                .bindPopup(`
+                    <b>${booth.name}</b><br>
+                    ID: ${booth.id}<br>
+                    Status: ${booth.status}<br>
+                    Province: ${booth.province}
+                `);
+            markers[booth.id] = marker;
         });
+
+        // Search functionality
+        const searchInput = document.getElementById('searchInput');
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            filterTollItems();
+        });
+
+        // Province filter
+        const provinceFilter = document.getElementById('provinceFilter');
+        provinceFilter.addEventListener('change', filterTollItems);
+
+        // Sort functionality
+        const sortSelect = document.getElementById('sortSelect');
+        sortSelect.addEventListener('change', function() {
+            const sortBy = this.value;
+            const tollItems = Array.from(document.querySelectorAll('.toll-item'));
+            
+            tollItems.sort((a, b) => {
+                switch(sortBy) {
+                    case 'name':
+                        return a.querySelector('.toll-name').textContent.localeCompare(b.querySelector('.toll-name').textContent);
+                    case 'status':
+                        return a.dataset.status.localeCompare(b.dataset.status);
+                    case 'province':
+                        return a.dataset.province.localeCompare(b.dataset.province);
+                    default:
+                        return 0;
+                }
+            });
+
+            const container = document.querySelector('.toll-items');
+            tollItems.forEach(item => container.appendChild(item));
+        });
+
+        function filterTollItems() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const selectedProvince = provinceFilter.value;
+            
+            document.querySelectorAll('.toll-item').forEach(item => {
+                const name = item.querySelector('.toll-name').textContent.toLowerCase();
+                const province = item.dataset.province;
+                
+                const matchesSearch = name.includes(searchTerm);
+                const matchesProvince = !selectedProvince || province === selectedProvince;
+                
+                item.style.display = matchesSearch && matchesProvince ? 'block' : 'none';
+            });
+        }
 
         // List item click events
         document.querySelectorAll('.toll-item').forEach(item => {
             item.addEventListener('click', function() {
-                const plazaName = this.querySelector('.toll-name').textContent;
-                const plaza = tollPlazas.find(p => p.name === plazaName);
-                if (plaza) {
-                    map.setView(plaza.coords, 15);
+                const boothId = this.querySelector('.toll-id').textContent;
+                const booth = tollBooths.find(b => b.id === boothId);
+                if (booth) {
+                    map.setView(booth.coords, 12);
                     document.querySelectorAll('.toll-item').forEach(i => i.classList.remove('active'));
                     this.classList.add('active');
                 }
             });
         });
-
-        // Search functionality
-        const searchInput = document.querySelector('.search-box input');
-        searchInput.addEventListener('input', function() {
-            const searchTerm = this.value.toLowerCase();
-            document.querySelectorAll('.toll-item').forEach(item => {
-                const name = item.querySelector('.toll-name').textContent.toLowerCase();
-                item.style.display = name.includes(searchTerm) ? 'block' : 'none';
-            });
-        });
-
-        // Refresh button
-        document.querySelector('.refresh-btn').addEventListener('click', function() {
-            // In a real app, this would refresh the data
-            alert('Refreshing toll plaza data...');
-        });
     });
+
+    function refreshData() {
+        window.location.reload();
+    }
     </script>
 </body>
 </html>

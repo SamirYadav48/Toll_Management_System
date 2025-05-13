@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -18,10 +19,10 @@
             </div>
             <div class="header-right">
                 <div class="user-info">
-                <a href="${pageContext.request.contextPath}/CustomerSettingsController" class="user-name-link">
-                    <span class="user-name">Bina Karki</span>
+                    <a href="${pageContext.request.contextPath}/CustomerSettingsController" class="user-name-link">
+                        <span class="user-name">${user.firstName} ${user.lastName}</span>
                     </a>
-                    <img src="user-avatar.jpg" alt="User Avatar" class="user-avatar">
+                    <img src="${pageContext.request.contextPath}/resources/user-avatar.jpg" alt="User Avatar" class="user-avatar">
                 </div>
             </div>
         </header>
@@ -45,7 +46,7 @@
                 <h2>Account Settings</h2>
                 <div class="date-display">
                     <i class="fas fa-calendar-alt"></i>
-                    <span id="current-date">April 15, 2025</span>
+                    <span id="current-date"></span>
                 </div>
             </div>
 
@@ -60,38 +61,43 @@
                 <div class="settings-content">
                     <!-- Profile Tab -->
                     <div id="profile" class="tab-content active">
-                        <form class="settings-form">
+                        <form class="settings-form" action="CustomerSettingsController" method="post">
+                            <input type="hidden" name="action" value="updateProfile">
                             <div class="form-group profile-picture">
                                 <label>Profile Picture</label>
                                 <div class="profile-pic-container">
-                                    <img src="user-avatar.jpg" alt="Profile Picture" class="profile-pic">
-                                  
+                                    <img src="${pageContext.request.contextPath}/resources/user-avatar.jpg" alt="Profile Picture" class="profile-pic">
                                 </div>
                             </div>
 
                             <div class="form-group">
-                                <label for="fullname">Full Name</label>
-                                <input type="text" id="fullname" value="John Doe">
+                                <label for="firstName">First Name</label>
+                                <input type="text" id="firstName" name="firstName" value="${user.firstName}" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="lastName">Last Name</label>
+                                <input type="text" id="lastName" name="lastName" value="${user.lastName}" required>
                             </div>
 
                             <div class="form-group">
                                 <label for="email">Email Address</label>
-                                <input type="email" id="email" value="john.doe@example.com">
+                                <input type="email" id="email" name="email" value="${user.email}" required>
                             </div>
 
                             <div class="form-group">
                                 <label for="phone">Phone Number</label>
-                                <input type="tel" id="phone" value="+977 9841XXXXXX">
+                                <input type="tel" id="phone" name="phone" value="${user.phone}">
                             </div>
 
                             <div class="form-group">
-                                <label for="address">Address</label>
-                                <textarea id="address">Kathmandu, Nepal</textarea>
+                                <label for="province">Province</label>
+                                <input type="text" id="province" name="province" value="${user.province}">
                             </div>
 
                             <div class="form-group">
-                                <label for="license">Driver's License Number</label>
-                                <input type="text" id="license" value="NP1234567890">
+                                <label for="postalCode">Postal Code</label>
+                                <input type="text" id="postalCode" name="postalCode" value="${user.postalCode}">
                             </div>
 
                             <div class="form-actions">
@@ -103,26 +109,21 @@
 
                     <!-- Security Tab -->
                     <div id="security" class="tab-content">
-                        <form class="settings-form">
+                        <form class="settings-form" action="CustomerSettingsController" method="post">
+                            <input type="hidden" name="action" value="updatePassword">
                             <div class="form-group">
-                                <label for="current-password">Current Password</label>
-                                <input type="password" id="current-password">
+                                <label for="currentPassword">Current Password</label>
+                                <input type="password" id="currentPassword" name="currentPassword" required>
                             </div>
 
                             <div class="form-group">
-                                <label for="new-password">New Password</label>
-                                <input type="password" id="new-password">
-                                <div class="password-strength">
-                                    <span class="strength-bar weak"></span>
-                                    <span class="strength-bar medium"></span>
-                                    <span class="strength-bar strong"></span>
-                                    <span class="strength-text">Password strength</span>
-                                </div>
+                                <label for="newPassword">New Password</label>
+                                <input type="password" id="newPassword" name="newPassword" required>
                             </div>
 
                             <div class="form-group">
-                                <label for="confirm-password">Confirm New Password</label>
-                                <input type="password" id="confirm-password">
+                                <label for="confirmPassword">Confirm New Password</label>
+                                <input type="password" id="confirmPassword" name="confirmPassword" required>
                             </div>
 
                             <div class="security-tips">
@@ -144,44 +145,39 @@
 
                     <!-- Preferences Tab -->
                     <div id="preferences" class="tab-content">
-                        <form class="settings-form">
+                        <form class="settings-form" action="CustomerSettingsController" method="post">
+                            <input type="hidden" name="action" value="updatePreferences">
                             <div class="form-group">
-                                <label>Language</label>
-                                <select>
-                                    <option selected>English</option>
-                                    <option>Nepali</option>
+                                <label for="language">Language</label>
+                                <select id="language" name="language">
+                                    <option value="en" ${user.language == 'en' ? 'selected' : ''}>English</option>
+                                    <option value="ne" ${user.language == 'ne' ? 'selected' : ''}>Nepali</option>
                                 </select>
                             </div>
 
                             <div class="form-group">
-                                <label>Currency</label>
-                                <select>
-                                    <option selected>Nepalese Rupee (NPR)</option>
-                                    <option>US Dollar (USD)</option>
+                                <label for="currency">Currency</label>
+                                <select id="currency" name="currency">
+                                    <option value="NPR" ${user.currency == 'NPR' ? 'selected' : ''}>Nepalese Rupee (NPR)</option>
+                                    <option value="USD" ${user.currency == 'USD' ? 'selected' : ''}>US Dollar (USD)</option>
                                 </select>
                             </div>
 
                             <div class="form-group">
-                                <label>Theme</label>
-                                <div class="theme-options">
-                                    <label class="theme-option">
-                                        <input type="radio" name="theme" checked>
-                                        <span class="theme-light">Light</span>
-                                    </label>
-                                    <label class="theme-option">
-                                        <input type="radio" name="theme">
-                                        <span class="theme-dark">Dark</span>
-                                    </label>
-                                </div>
+                                <label for="theme">Theme</label>
+                                <select id="theme" name="theme">
+                                    <option value="light" ${user.theme == 'light' ? 'selected' : ''}>Light</option>
+                                    <option value="dark" ${user.theme == 'dark' ? 'selected' : ''}>Dark</option>
+                                </select>
                             </div>
 
                             <div class="form-group">
-                                <label>Default Toll Payment Method</label>
-                                <select>
-                                    <option selected>Wallet Balance</option>
-                                    <option>Credit/Debit Card</option>
-                                    <option>Mobile Banking</option>
-                                    <option>Connect IPS</option>
+                                <label for="defaultPaymentMethod">Default Payment Method</label>
+                                <select id="defaultPaymentMethod" name="defaultPaymentMethod">
+                                    <option value="wallet" ${user.defaultPaymentMethod == 'wallet' ? 'selected' : ''}>Wallet Balance</option>
+                                    <option value="card" ${user.defaultPaymentMethod == 'card' ? 'selected' : ''}>Credit/Debit Card</option>
+                                    <option value="mobile" ${user.defaultPaymentMethod == 'mobile' ? 'selected' : ''}>Mobile Banking</option>
+                                    <option value="ips" ${user.defaultPaymentMethod == 'ips' ? 'selected' : ''}>Connect IPS</option>
                                 </select>
                             </div>
 
@@ -194,11 +190,12 @@
 
                     <!-- Notifications Tab -->
                     <div id="notifications" class="tab-content">
-                        <form class="settings-form">
+                        <form class="settings-form" action="CustomerSettingsController" method="post">
+                            <input type="hidden" name="action" value="updateNotifications">
                             <div class="form-group toggle-group">
                                 <label>Email Notifications</label>
                                 <label class="switch">
-                                    <input type="checkbox" checked>
+                                    <input type="checkbox" name="emailNotifications" ${user.emailNotifications ? 'checked' : ''}>
                                     <span class="slider round"></span>
                                 </label>
                             </div>
@@ -206,7 +203,7 @@
                             <div class="form-group toggle-group">
                                 <label>SMS Notifications</label>
                                 <label class="switch">
-                                    <input type="checkbox">
+                                    <input type="checkbox" name="smsNotifications" ${user.smsNotifications ? 'checked' : ''}>
                                     <span class="slider round"></span>
                                 </label>
                             </div>
@@ -214,7 +211,7 @@
                             <div class="form-group toggle-group">
                                 <label>Push Notifications</label>
                                 <label class="switch">
-                                    <input type="checkbox" checked>
+                                    <input type="checkbox" name="pushNotifications" ${user.pushNotifications ? 'checked' : ''}>
                                     <span class="slider round"></span>
                                 </label>
                             </div>
@@ -224,29 +221,22 @@
                                 
                                 <div class="form-group checkbox-group">
                                     <label>
-                                        <input type="checkbox" checked>
+                                        <input type="checkbox" name="lowBalanceAlerts" ${user.lowBalanceAlerts ? 'checked' : ''}>
                                         <span>Low balance alerts</span>
                                     </label>
                                 </div>
 
                                 <div class="form-group checkbox-group">
                                     <label>
-                                        <input type="checkbox" checked>
+                                        <input type="checkbox" name="paymentReceipts" ${user.paymentReceipts ? 'checked' : ''}>
                                         <span>Toll payment receipts</span>
                                     </label>
                                 </div>
 
                                 <div class="form-group checkbox-group">
                                     <label>
-                                        <input type="checkbox">
+                                        <input type="checkbox" name="promotionalOffers" ${user.promotionalOffers ? 'checked' : ''}>
                                         <span>Promotional offers</span>
-                                    </label>
-                                </div>
-
-                                <div class="form-group checkbox-group">
-                                    <label>
-                                        <input type="checkbox" checked>
-                                        <span>System updates</span>
                                     </label>
                                 </div>
                             </div>
@@ -271,7 +261,7 @@
         </footer>
     </div>
 
-<script src="${pageContext.request.contextPath}/css/settings.js"></script>
+    <script src="${pageContext.request.contextPath}/css/settings.js"></script>
     
 </body>
 </html>

@@ -48,10 +48,6 @@
         <h1>Toll Booth Management</h1>
       </div>
       <div class="header-right">
-        <div class="search-box">
-          <input type="text" placeholder="Search..." />
-          <i class="fas fa-search"></i>
-        </div>
         <div class="user-profile">
           <img src="admin-avatar.jpg" alt="Admin Avatar"/>
           <span>Admin</span>
@@ -64,26 +60,6 @@
     </header>
 
     <div class="dashboard-content">
-      <div class="action-bar">
-        <button class="btn btn-primary"><i class="fas fa-plus"></i> Add Toll Booth</button>
-        <div class="filters">
-          <select>
-            <option>All Statuses</option>
-            <option>Active</option>
-            <option>Inactive</option>
-            <option>Maintenance</option>
-          </select>
-          <select>
-            <option>All Locations</option>
-            <option>East-West Highway</option>
-            <option>Prithvi Highway</option>
-            <option>Kathmandu Ring Road</option>
-            <option>BP Highway</option>
-            <option>Muglin-Pokhara Road</option>
-          </select>
-        </div>
-      </div>
-
       <div class="table-container">
         <table class="booths-table">
           <thead>

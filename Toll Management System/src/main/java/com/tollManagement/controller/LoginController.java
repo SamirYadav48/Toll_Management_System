@@ -2,6 +2,10 @@ package com.tollManagement.controller;
 
 import java.io.IOException; 
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -9,6 +13,7 @@ import com.tollManagement.model.UserModel;
 import com.tollManagement.service.LoginService;
 import com.tollManagement.util.CookieUtil;
 import com.tollManagement.util.SessionUtil;
+import com.tollManagement.config.DbConfig;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -58,7 +63,35 @@ public class LoginController extends HttpServlet {
 
             if (loginStatus) {
                 String account_type = loginService.getUserRole(username);
-                SessionUtil.setAttribute(request, "user", userModel);
+                
+                // Fetch complete user data
+                try (Connection conn = DbConfig.getDbConnection()) {
+                    String query = "SELECT * FROM User WHERE username = ?";
+                    try (PreparedStatement stmt = conn.prepareStatement(query)) {
+                        stmt.setString(1, username);
+                        ResultSet rs = stmt.executeQuery();
+                        if (rs.next()) {
+                            UserModel user = new UserModel(
+                                rs.getString("username"),
+                                rs.getString("password"),
+                                rs.getString("account_type"),
+                                rs.getString("first_name"),
+                                rs.getString("last_name"),
+                                rs.getString("email"),
+                                rs.getString("phone"),
+                                rs.getString("province"),
+                                rs.getString("postal_code"),
+                                rs.getString("vehicle_type"),
+                                rs.getString("vehicle_number"),
+                                rs.getString("citizenship_number")
+                            );
+                            SessionUtil.setAttribute(request, "user", user);
+                        }
+                    }
+                } catch (SQLException | ClassNotFoundException e) {
+                    logger.log(Level.SEVERE, "Error fetching user data", e);
+                }
+                
                 SessionUtil.setAttribute(request, "username", username);
                 SessionUtil.setAttribute(request, "account_type", account_type);
 
