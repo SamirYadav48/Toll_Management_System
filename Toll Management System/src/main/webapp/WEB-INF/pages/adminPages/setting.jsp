@@ -64,11 +64,11 @@
                 <h1>System Settings</h1>
             </div>
             <div class="header-right">
-                <div class="user-profile">
-                    <img src="admin-avatar.jpg" alt="Admin Avatar">
-                    <span>Admin</span>
-                    <i class="fas fa-chevron-down"></i>
-                </div>
+                <div class="user-profile" id="userProfile">
+  					<a href="${pageContext.request.contextPath}/SettingController"><i class="fas fa-user"></i>
+  					<span class="user-name">${user.firstName} ${user.lastName}</span>
+  					</a>
+				</div>
                 <a href="${pageContext.request.contextPath}/login" class="logout-btn">
                     <i class="fas fa-sign-out-alt"></i>
                 </a>
@@ -91,17 +91,21 @@
             <div class="tab-contents">
             
             <!-- Profile Settings -->
-				<div class="tab-content" id="profile-tab">
+				<div class="tab-content active" id="profile-tab">
     				<form class="settings-form">
        				 <div class="form-section">
            			 	<h3><i class="fas fa-user-circle"></i> Profile Information</h3>
             				<div class="form-group">
                 				<label for="profile-name">Full Name</label>
-                			<input type="text" id="profile-name" value="Admin Name">
+                			<input type="text" id="profile-name" value="${user.firstName} ${user.lastName}" required>
             			</div>
             		<div class="form-group">
                		 	<label for="profile-email">Email Address</label>
-               		 	<input type="email" id="profile-email" value="admin@pathpay.com">
+               		 	<input type="email" id="profile-email" value="${user.email}" required>
+            		</div>
+            		<div class="form-group">
+               		 	<label for="profile-phone">Phone Number</label>
+               		 	<input type="email" id="profile-email" value="${user.phone}" required>
             		</div>
            
         			</div>
@@ -131,7 +135,7 @@
             
             
                 <!-- General Settings -->
-                <div class="tab-content active" id="general-tab">
+                <div class="tab-content" id="general-tab">
                     <form class="settings-form">
                         <div class="form-section">
                             <h3><i class="fas fa-building"></i> System Information</h3>
@@ -432,9 +436,12 @@
                             <button type="submit" class="btn btn-primary">Save Changes</button>
                         </div>
                     </form>
+                    
                 </div>
             </div>
+            
         </div>
+        
     </main>
 <script>
     // Tab switching functionality

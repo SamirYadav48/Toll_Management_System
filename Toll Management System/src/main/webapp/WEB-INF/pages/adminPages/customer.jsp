@@ -60,11 +60,12 @@
           <input type="text" placeholder="Search customers..." id="searchInput"/>
           <i class="fas fa-search"></i>
         </div>
-        <div class="user-profile">
-          <img src="admin-avatar.jpg" alt="Admin Avatar"/>
-          <span><a href="${pageContext.request.contextPath}/AdminProfileController"><i class="fas fa-user"></i>Admin</a></span>
-          <i class="fas fa-chevron-down"></i>
-        </div>
+        <div class="user-profile" id="userProfile">
+  					<a href="${pageContext.request.contextPath}/SettingController"><i class="fas fa-user"></i>
+  					<span class="user-name">${user.firstName} ${user.lastName}</span>
+  					</a>
+				</div>
+              <a href="${pageContext.request.contextPath}/login" class="logout-btn"><i class="fas fa-sign-out-alt"></i></a>
         
       </div>
     </header>

@@ -36,9 +36,11 @@
                 <h1>Transaction History</h1>
             </div>
             <div class="header-right">
-            	<div class="user-profile">
-                    <img src="admin-avatar.jpg" alt="Admin Avatar"><span>Admin</span><i class="fas fa-chevron-down"></i>
-                </div>
+            	<div class="user-profile" id="userProfile">
+  					<a href="${pageContext.request.contextPath}/SettingController"><i class="fas fa-user"></i>
+  					<span class="user-name">${user.firstName} ${user.lastName}</span>
+  					</a>
+				</div>
                 <a href="${pageContext.request.contextPath}/login" class="logout-btn"><i class="fas fa-sign-out-alt"></i></a>
             </div>
         </header>
