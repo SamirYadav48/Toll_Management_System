@@ -100,13 +100,12 @@ public class WalletService {
             }
             
             // 3. Record transaction with auto-increment transaction_id
-            String transactionQuery = "INSERT INTO transactions (vehicleNo, boothId, amount, paymentMode, status, transactionDate) VALUES (?, ?, ?, ?, ?, NOW())";
+            String transactionQuery = "INSERT INTO transactions (vehicleNo, boothId, amount, paymentMode, status, transactionDate) VALUES (?, ?, ?, ?, 'SUCCESS', NOW())";
             try (PreparedStatement pstmt = conn.prepareStatement(transactionQuery)) {
                 pstmt.setString(1, "WALLET_RECHARGE");
                 pstmt.setString(2, "ONLINE_RECHARGE"); // Special identifier for online recharge
                 pstmt.setDouble(3, amount);
                 pstmt.setString(4, paymentMethod);
-                pstmt.setString(5, "SUCCESS");
                 int rows = pstmt.executeUpdate();
                 if (rows == 0) throw new SQLException("Failed to record transaction");
                 System.out.println("Recorded transaction successfully");

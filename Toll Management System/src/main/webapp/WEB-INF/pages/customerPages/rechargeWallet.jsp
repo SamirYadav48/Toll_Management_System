@@ -90,28 +90,28 @@
                         <h3>Payment Method</h3>
                         <div class="method-options">
                             <label class="method-option">
-                                <input type="radio" name="paymentMethod" value="esewa" checked>
+                                <input type="radio" name="paymentMethod" value="ONLINE" checked>
                                 <div class="option-content">
                                     <img src="${pageContext.request.contextPath}/resources/esewa-logo.png" alt="eSewa">
                                     <span>eSewa</span>
                                 </div>
                             </label>
                             <label class="method-option">
-                                <input type="radio" name="paymentMethod" value="khalti">
+                                <input type="radio" name="paymentMethod" value="ONLINE">
                                 <div class="option-content">
                                     <img src="${pageContext.request.contextPath}/resources/khalti-logo.png" alt="Khalti">
                                     <span>Khalti</span>
                                 </div>
                             </label>
                             <label class="method-option">
-                                <input type="radio" name="paymentMethod" value="card">
+                                <input type="radio" name="paymentMethod" value="CARD">
                                 <div class="option-content">
                                     <i class="fas fa-credit-card"></i>
                                     <span>Credit/Debit Card</span>
                                 </div>
                             </label>
                             <label class="method-option">
-                                <input type="radio" name="paymentMethod" value="connectips">
+                                <input type="radio" name="paymentMethod" value="ONLINE">
                                 <div class="option-content">
                                     <img src="${pageContext.request.contextPath}/resources/connectips-logo.png" alt="Connect IPS">
                                     <span>Connect IPS</span>
@@ -176,7 +176,7 @@
         
         // State
         let selectedAmount = 0;
-        let selectedMethod = 'esewa';
+        let selectedMethod = 'ONLINE';
         
         // Quick amount buttons
         amountButtons.forEach(button => {
@@ -187,52 +187,76 @@
                 // Add active class to clicked button
                 this.classList.add('active');
                 
-                // Set selected amount
+                // Set selected amount and update custom amount input
                 selectedAmount = parseInt(this.dataset.amount);
-                customAmountInput.value = '';
+                console.log('Quick Amount Selected:', selectedAmount);
+                customAmountInput.value = selectedAmount;
                 
+                // Enable recharge button and update summary
+                rechargeBtn.disabled = false;
                 updateSummary();
             });
         });
         
         // Custom amount input
         customAmountInput.addEventListener('input', function() {
-            if (this.value) {
-                // Remove active class from quick amount buttons
-                amountButtons.forEach(btn => btn.classList.remove('active'));
-                
-                selectedAmount = parseInt(this.value) || 0;
-                updateSummary();
-            }
+            // Remove active class from quick amount buttons
+            amountButtons.forEach(btn => btn.classList.remove('active'));
+            
+            // Parse the input value and ensure it's a valid number
+            selectedAmount = parseInt(this.value) || 0;
+            console.log('Custom Amount Entered:', selectedAmount);
+            
+            // Enable/disable recharge button based on amount
+            rechargeBtn.disabled = selectedAmount < 100; // Minimum amount of 100
+            
+            updateSummary();
         });
         
         // Payment method selection
         paymentMethodRadios.forEach(radio => {
             radio.addEventListener('change', function() {
                 selectedMethod = this.value;
+                console.log('Payment Method Selected:', selectedMethod);
                 updateSummary();
             });
         });
         
         // Update summary function
         function updateSummary() {
+            console.log('Updating Summary - Amount:', selectedAmount);
+            
+            // Ensure selectedAmount is a number
+            selectedAmount = Number(selectedAmount);
+            
             if (selectedAmount > 0) {
                 // Calculate service fee (2% for card payments)
-                let fee = 0;
-                if (selectedMethod === 'card') {
-                    fee = Math.round(selectedAmount * 0.02);
-                }
-                
+                let fee = selectedMethod === 'CARD' ? Math.round(selectedAmount * 0.02) : 0;
                 const total = selectedAmount + fee;
                 
-                // Update summary display
+                console.log('Calculated Total:', total);
+                
+                // Format payment method text for display
+                let methodText = '';
+                switch(selectedMethod) {
+                    case 'ONLINE':
+                        methodText = document.querySelector('input[name="paymentMethod"]:checked').closest('.method-option').querySelector('span').textContent;
+                        break;
+                    case 'CARD':
+                        methodText = 'Credit/Debit Card';
+                        break;
+                    default:
+                        methodText = 'Not selected';
+                }
+                
+                // Update summary display with formatted numbers
                 summaryAmount.textContent = `NPR ${selectedAmount.toLocaleString()}`;
-                summaryMethod.textContent = selectedMethod.charAt(0).toUpperCase() + selectedMethod.slice(1);
+                summaryMethod.textContent = methodText;
                 serviceFee.textContent = `NPR ${fee.toLocaleString()}`;
                 summaryTotal.textContent = `NPR ${total.toLocaleString()}`;
                 
-                // Enable recharge button
-                rechargeBtn.disabled = false;
+                // Enable recharge button if amount is valid
+                rechargeBtn.disabled = selectedAmount < 100;
             } else {
                 // Reset summary display
                 summaryAmount.textContent = 'NPR 0';
@@ -245,19 +269,28 @@
             }
         }
         
+        // Initialize with default values
+        selectedMethod = 'ONLINE'; // Set default payment method
+        document.querySelector('input[name="paymentMethod"][value="ONLINE"]').checked = true;
+        updateSummary();
+        
         // Handle recharge button click
         rechargeBtn.addEventListener('click', function() {
-            if (selectedAmount > 0) {
+            const amount = parseInt(customAmountInput.value) || selectedAmount;
+            console.log('Recharge Button Clicked - Amount:', amount);
+            
+            if (amount >= 100) { // Minimum amount check
                 console.log('Initiating recharge process...');
-                console.log('Amount:', selectedAmount);
+                console.log('Amount:', amount);
                 console.log('Payment Method:', selectedMethod);
                 
                 // Create URL-encoded form data
                 const formData = new URLSearchParams();
-                formData.append('amount', selectedAmount.toString());
+                formData.append('amount', amount.toString());
                 formData.append('paymentMethod', selectedMethod);
+                formData.append('status', 'SUCCESS'); // Add status field with SUCCESS value
                 
-                console.log('Form data:', formData.toString());
+                console.log('Form data being sent:', formData.toString());
                 
                 // Submit form
                 fetch('${pageContext.request.contextPath}/RechargeWalletController', {
@@ -292,7 +325,7 @@
                     alert('Network error occurred. Please check your connection and try again.');
                 });
             } else {
-                alert('Please select or enter a valid amount');
+                alert('Please enter an amount of at least NPR 100');
             }
         });
     });
