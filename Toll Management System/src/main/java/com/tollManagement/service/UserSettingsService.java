@@ -4,10 +4,13 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import com.tollManagement.config.DbConfig;
 import com.tollManagement.model.UserModel;
+import com.tollManagement.model.TollRateModel;
 
 public class UserSettingsService {
     
@@ -31,7 +34,6 @@ public class UserSettingsService {
                 user.setPostalCode(rs.getString("postal_code"));
                 user.setCitizenshipNumber(rs.getString("citizenship_number"));
                 user.setAccountType(rs.getString("account_type"));
-                
                 return user;
             }
             
@@ -161,7 +163,7 @@ public class UserSettingsService {
             SELECT u.*, v.vehicle_type, v.vehicle_number, v.total_toll_paid,
                    v.last_toll_date, v.monthly_pass_expiry, v.is_active as vehicle_active
             FROM User u
-            LEFT JOIN vehicle v ON u.username = v.username
+            LEFT JOIN vehicle v ON u.username = v.username AND v.is_active = true
             WHERE u.username = ?
         """;
         
@@ -183,7 +185,6 @@ public class UserSettingsService {
                 user.setPostalCode(rs.getString("postal_code"));
                 user.setCitizenshipNumber(rs.getString("citizenship_number"));
                 user.setAccountType(rs.getString("account_type"));
-                
                 details.put("user", user);
                 
                 // Vehicle details (if any)
@@ -204,5 +205,32 @@ public class UserSettingsService {
         }
         
         return details;
+    }
+
+    public List<TollRateModel> getTollRates() {
+        List<TollRateModel> tollRates = new ArrayList<>();
+        String query = "SELECT * FROM toll_rates WHERE is_active = 1 ORDER BY vehicle_type";
+        
+        try (Connection conn = DbConfig.getDbConnection();
+             PreparedStatement stmt = conn.prepareStatement(query);
+             ResultSet rs = stmt.executeQuery()) {
+            
+            while (rs.next()) {
+                TollRateModel rate = new TollRateModel(
+                    rs.getInt("rate_id"),
+                    rs.getString("vehicle_type"),
+                    rs.getDouble("single_pass_rate"),
+                    rs.getDouble("monthly_pass_rate"),
+                    rs.getString("description"),
+                    rs.getBoolean("is_active")
+                );
+                tollRates.add(rate);
+            }
+            
+        } catch (SQLException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        
+        return tollRates;
     }
 } 

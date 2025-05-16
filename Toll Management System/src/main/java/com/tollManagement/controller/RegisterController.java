@@ -113,9 +113,10 @@ public class RegisterController extends HttpServlet {
         boolean registrationSuccess = registerService.registerUser(userModel, vehicleModel);
 
         if (registrationSuccess) {
-            // Set success message and redirect to login
-            request.setAttribute("success", "Registration successful! Please login.");
-            request.getRequestDispatcher("/WEB-INF/pages/common/login.jsp").forward(request, response);
+            // Set success message and stay on registration page
+            request.setAttribute("success", "Registration successful! Redirecting to login page...");
+            request.setAttribute("redirect", true);  // Add a flag for JavaScript to handle redirect
+            request.getRequestDispatcher("/WEB-INF/pages/common/register.jsp").forward(request, response);
         } else {
             // Set error message and return to registration form
             request.setAttribute("error", "Registration failed. Please try again.");

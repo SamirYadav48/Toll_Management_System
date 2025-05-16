@@ -198,9 +198,7 @@
             <div class="recent-activity">
                 <div class="section-header">
                     <h3>Recent Transactions</h3>
-                    <a href="${pageContext.request.contextPath}/PaymentHistoryController" class="view-all">
-                        
-                    </a>
+                    <a href="${pageContext.request.contextPath}/PaymentHistoryController" class="view-all">View All</a>
                 </div>
                 <div class="table-container">
                     <table class="activity-table">
@@ -253,59 +251,6 @@
                             </c:if>
                         </tbody>
                     </table>
-                </div>
-            </div>
-
-            <div class="toll-info">
-                <div class="toll-rates">
-                    <div class="section-header">
-                        <h3>Current Toll Rates</h3>
-                        <div class="info-tooltip">
-                            <i class="fas fa-info-circle"></i>
-                            <span class="tooltip-text">Rates may vary based on location and time</span>
-                        </div>
-                    </div>
-                    <div class="table-container">
-                        <table class="rates-table">
-                            <thead>
-                                <tr>
-                                    <th>Vehicle Type</th>
-                                    <th>Single Pass</th>
-                                    <th>Monthly Pass</th>
-                                    <th>Savings</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <c:forEach items="${tollRates}" var="rate">
-                                    <tr>
-                                        <td>
-                                            <div class="vehicle-type">
-                                                <i class="fas fa-${rate.vehicleType eq 'Car' ? 'car' : rate.vehicleType eq 'Truck' ? 'truck' : 'motorcycle'}"></i>
-                                                <span>${rate.vehicleType}</span>
-                                            </div>
-                                        </td>
-                                        <td>रु <fmt:formatNumber value="${rate.singlePassRate}" pattern="#,##0.00"/></td>
-                                        <td>रु <fmt:formatNumber value="${rate.monthlyPassRate}" pattern="#,##0.00"/></td>
-                                        <td>
-                                            <span class="savings">
-                                                <fmt:formatNumber value="${((rate.singlePassRate * 30) - rate.monthlyPassRate) / (rate.singlePassRate * 30) * 100}" pattern="#,##0"/>%
-                                            </span>
-                                        </td>
-                                    </tr>
-                                </c:forEach>
-                                <c:if test="${empty tollRates}">
-                                    <tr>
-                                        <td colspan="4" class="no-rates">
-                                            <div class="empty-state">
-                                                <i class="fas fa-receipt"></i>
-                                                <p>No toll rates available</p>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </c:if>
-                            </tbody>
-                        </table>
-                    </div>
                 </div>
             </div>
         </main>

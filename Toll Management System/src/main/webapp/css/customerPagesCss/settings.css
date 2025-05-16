@@ -463,3 +463,158 @@ h2.mb-4 {
         padding: 15px;
     }
 }
+
+/* Toll Rates Tab Styles */
+.toll-rates-section {
+    background: white;
+    border-radius: 10px;
+    padding: 1.5rem;
+}
+
+.toll-rates-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 20px 0;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.toll-rates-table thead {
+    background-color: #f8fafc;
+}
+
+.toll-rates-table th {
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    padding: 16px 20px;
+    text-align: left;
+    border-bottom: 2px solid #e2e8f0;
+    letter-spacing: 0.5px;
+}
+
+.toll-rates-table td {
+    padding: 16px 20px;
+    border-bottom: 1px solid #e2e8f0;
+    vertical-align: middle;
+}
+
+.toll-rates-table tr:last-child td {
+    border-bottom: none;
+}
+
+.toll-rates-table tr:hover {
+    background-color: #f8fafc;
+}
+
+.toll-rates-table .vehicle-type {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 500;
+    color: #1e293b;
+}
+
+.toll-rates-table .vehicle-type i {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #3b82f6;
+    color: white;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+.toll-rates-table .amount {
+    font-family: 'Roboto Mono', monospace;
+    font-weight: 500;
+    color: #1e293b;
+}
+
+.toll-rates-table .savings-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(16, 185, 129, 0.1);
+    color: #059669;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.toll-rates-table .savings-badge i {
+    font-size: 0.9rem;
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+}
+
+.section-header h3 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.25rem;
+    color: #1e293b;
+}
+
+.section-header h3 i {
+    color: #3b82f6;
+}
+
+.info-tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.info-tooltip .tooltip-text {
+    visibility: hidden;
+    background: #1e293b;
+    color: white;
+    text-align: center;
+    padding: 8px 12px;
+    border-radius: 6px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.85rem;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.info-tooltip:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Responsive adjustments for toll rates */
+@media (max-width: 768px) {
+    .toll-rates-table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+    
+    .toll-rates-table th,
+    .toll-rates-table td {
+        padding: 12px 16px;
+    }
+    
+    .toll-rates-table .vehicle-type i {
+        width: 28px;
+        height: 28px;
+    }
+}

@@ -1,4 +1,5 @@
 @charset "UTF-8";
+
 :root {
     --dark-bg: #0F172A;
     --dark-secondary: #1E293B;
@@ -486,6 +487,108 @@ body {
 .info-tooltip:hover .tooltip-text {
     visibility: visible;
     opacity: 1;
+}
+
+/* Toll Rates Table */
+.toll-rates-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 20px 0;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.toll-rates-table thead {
+    background-color: #f8fafc;
+}
+
+.toll-rates-table th {
+    font-weight: 600;
+    color: var(--text-gray);
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    padding: 16px 20px;
+    text-align: left;
+    border-bottom: 2px solid #e2e8f0;
+    letter-spacing: 0.5px;
+}
+
+.toll-rates-table td {
+    padding: 16px 20px;
+    border-bottom: 1px solid #e2e8f0;
+    vertical-align: middle;
+}
+
+.toll-rates-table tr:last-child td {
+    border-bottom: none;
+}
+
+.toll-rates-table tr:hover {
+    background-color: #f8fafc;
+}
+
+.toll-rates-table .vehicle-type {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 500;
+    color: var(--dark-bg);
+}
+
+.toll-rates-table .vehicle-type i {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--blue-primary);
+    color: white;
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+.toll-rates-table .amount {
+    font-family: 'Roboto Mono', monospace;
+    font-weight: 500;
+    color: var(--dark-bg);
+}
+
+.toll-rates-table .savings-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--success);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.toll-rates-table .savings-badge i {
+    font-size: 0.85rem;
+}
+
+/* Update section header styles */
+.toll-info .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 0 20px 0;
+}
+
+.toll-info .section-header h3 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.25rem;
+    color: var(--dark-bg);
+}
+
+.toll-info .section-header h3 i {
+    color: var(--blue-primary);
 }
 
 /* Responsive Design */

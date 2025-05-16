@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -56,6 +57,7 @@
                     <button class="tab-btn" data-tab="security">Security</button>
                     <button class="tab-btn" data-tab="preferences">Preferences</button>
                     <button class="tab-btn" data-tab="notifications">Notifications</button>
+                    <button class="tab-btn" data-tab="tollRates">Toll Rates</button>
                 </div>
 
                 <div class="settings-content">
@@ -247,6 +249,54 @@
                             </div>
                         </form>
                     </div>
+
+                    <!-- Toll Rates Tab -->
+                    <div id="tollRates" class="tab-content">
+                        <div class="toll-rates-section">
+                            <div class="section-header">
+                                <h3><i class="fas fa-tags"></i> Current Toll Rates</h3>
+                                <div class="info-tooltip">
+                                    <i class="fas fa-info-circle"></i>
+                                    <span class="tooltip-text">Rates may vary based on location and time</span>
+                                </div>
+                            </div>
+                            <div class="table-container">
+                                <table class="toll-rates-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Vehicle Type</th>
+                                            <th>Single Pass</th>
+                                            <th>Monthly Pass</th>
+                                            <th>Savings</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <c:forEach items="${tollRates}" var="rate">
+                                            <tr>
+                                                <td>
+                                                    <div class="vehicle-type">
+                                                        <i class="fas fa-${rate.vehicleType eq 'Bus/Truck' ? 'bus' : 
+                                                                      rate.vehicleType eq 'Car/Jeep/Van' ? 'car' : 
+                                                                      rate.vehicleType eq 'Heavy Truck' ? 'truck' : 
+                                                                      rate.vehicleType eq 'Mini Bus' ? 'shuttle-van' : 'motorcycle'}"></i>
+                                                        <span>${rate.vehicleType}</span>
+                                                    </div>
+                                                </td>
+                                                <td class="amount">रु <fmt:formatNumber value="${rate.singlePassRate}" pattern="#,##0.00"/></td>
+                                                <td class="amount">रु <fmt:formatNumber value="${rate.monthlyPassRate}" pattern="#,##0.00"/></td>
+                                                <td>
+                                                    <span class="savings-badge">
+                                                        <i class="fas fa-piggy-bank"></i>
+                                                        ${rate.savings}%
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        </c:forEach>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </main>
@@ -261,7 +311,32 @@
         </footer>
     </div>
 
-    <script src="${pageContext.request.contextPath}/JS/settings.js"></script>
+    <script src="${pageContext.request.contextPath}/css/settings.js"></script>
     
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Existing date display code
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const currentDate = new Date().toLocaleDateString('en-US', options);
+            document.getElementById('current-date').textContent = currentDate;
+
+            // Tab switching functionality
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    // Remove active class from all buttons and contents
+                    tabBtns.forEach(b => b.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+
+                    // Add active class to clicked button and corresponding content
+                    btn.classList.add('active');
+                    const tabId = btn.getAttribute('data-tab');
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+        });
+    </script>
 </body>
 </html>

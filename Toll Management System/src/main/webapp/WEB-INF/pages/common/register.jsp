@@ -243,7 +243,49 @@
         </div>
     </div>
 
+    <!-- Add this style section in your head or CSS file -->
+    <style>
+        .form-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        .error-message {
+            color: #dc3545;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        input:invalid {
+            border-color: #dc3545;
+        }
+        
+        input:invalid + .error-message {
+            display: block;
+        }
+        
+        input:valid {
+            border-color: #28a745;
+        }
+        
+        .form-text {
+            color: #6c757d;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+    </style>
 
     <script src="${pageContext.request.contextPath}/js/validation.js"></script>
+    
+    <!-- Add redirect handling script -->
+    <% if (request.getAttribute("redirect") != null) { %>
+    <script>
+        // Show success message for 2 seconds before redirecting
+        setTimeout(function() {
+            window.location.href = "${pageContext.request.contextPath}/login";
+        }, 1000);
+    </script>
+    <% } %>
 </body>
 </html>
