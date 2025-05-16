@@ -386,6 +386,7 @@
 
         .back-btn:hover {
             background-color: #e2e8f0;
+        }
 
 /* Responsive Design */
 @media (max-width: 768px) {
@@ -418,5 +419,4 @@
         width: 100%;
         justify-content: center;
     }
-}
 }
