@@ -34,29 +34,38 @@ public class RechargeWalletController extends HttpServlet {
 		UserModel user = (UserModel) session.getAttribute("user");
 		
 		if (user == null) {
+			System.out.println("User not logged in, redirecting to login page");
 			response.sendRedirect(request.getContextPath() + "/login");
 			return;
 		}
 		
-		// Get wallet balance
-		double balance = walletService.getWalletBalance(user.getUsername());
-		
-		// Set attributes for JSP
-		request.setAttribute("user", user);
-		request.setAttribute("balance", balance);
-		
-		// Check for success/error messages
-		String success = request.getParameter("success");
-		String error = request.getParameter("error");
-		
-		if (success != null) {
-			request.setAttribute("successMessage", "Wallet recharged successfully!");
+		try {
+			// Get wallet balance
+			double balance = walletService.getWalletBalance(user.getUsername());
+			System.out.println("Retrieved balance for user " + user.getUsername() + ": " + balance);
+			
+			// Set attributes for JSP
+			request.setAttribute("user", user);
+			request.setAttribute("balance", balance);
+			
+			// Check for success/error messages
+			String success = request.getParameter("success");
+			String error = request.getParameter("error");
+			
+			if (success != null) {
+				request.setAttribute("successMessage", "Wallet recharged successfully!");
+			}
+			if (error != null) {
+				request.setAttribute("errorMessage", "Failed to recharge wallet. Please try again.");
+			}
+			
+			request.getRequestDispatcher("/WEB-INF/pages/customerPages/rechargeWallet.jsp").forward(request, response);
+			
+		} catch (Exception e) {
+			System.err.println("Error in doGet: " + e.getMessage());
+			e.printStackTrace();
+			response.sendRedirect(request.getContextPath() + "/error");
 		}
-		if (error != null) {
-			request.setAttribute("errorMessage", "Failed to recharge wallet. Please try again.");
-		}
-		
-		request.getRequestDispatcher("/WEB-INF/pages/customerPages/rechargeWallet.jsp").forward(request, response);
 	}
 
 	/**
@@ -67,6 +76,7 @@ public class RechargeWalletController extends HttpServlet {
 		UserModel user = (UserModel) session.getAttribute("user");
 		
 		if (user == null) {
+			System.out.println("User not logged in, redirecting to login page");
 			response.sendRedirect(request.getContextPath() + "/login");
 			return;
 		}
@@ -75,21 +85,39 @@ public class RechargeWalletController extends HttpServlet {
 		String amount = request.getParameter("amount");
 		String paymentMethod = request.getParameter("paymentMethod");
 		
+		System.out.println("Received recharge request - Amount: " + amount + ", Payment Method: " + paymentMethod);
+		
 		if (amount != null && paymentMethod != null) {
 			try {
 				double rechargeAmount = Double.parseDouble(amount);
+				
+				if (rechargeAmount <= 0) {
+					System.out.println("Invalid amount: " + rechargeAmount);
+					response.sendRedirect(request.getContextPath() + "/RechargeWalletController?error=Invalid amount");
+					return;
+				}
+				
+				System.out.println("Processing recharge for user: " + user.getUsername());
 				boolean success = walletService.processRecharge(user.getUsername(), rechargeAmount, paymentMethod);
 				
 				if (success) {
+					System.out.println("Recharge successful");
 					response.sendRedirect(request.getContextPath() + "/RechargeWalletController?success=true");
 				} else {
-					response.sendRedirect(request.getContextPath() + "/RechargeWalletController?error=true");
+					System.out.println("Recharge failed");
+					response.sendRedirect(request.getContextPath() + "/RechargeWalletController?error=Transaction failed");
 				}
 			} catch (NumberFormatException e) {
-				response.sendRedirect(request.getContextPath() + "/RechargeWalletController?error=true");
+				System.err.println("Invalid amount format: " + amount);
+				response.sendRedirect(request.getContextPath() + "/RechargeWalletController?error=Invalid amount format");
+			} catch (Exception e) {
+				System.err.println("Unexpected error during recharge: " + e.getMessage());
+				e.printStackTrace();
+				response.sendRedirect(request.getContextPath() + "/RechargeWalletController?error=System error occurred");
 			}
 		} else {
-			response.sendRedirect(request.getContextPath() + "/RechargeWalletController?error=true");
+			System.out.println("Missing parameters - Amount: " + amount + ", Payment Method: " + paymentMethod);
+			response.sendRedirect(request.getContextPath() + "/RechargeWalletController?error=Missing required parameters");
 		}
 	}
 

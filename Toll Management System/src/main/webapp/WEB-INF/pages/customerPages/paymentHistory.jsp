@@ -18,10 +18,7 @@
                 <h1>PathPay</h1>
             </div>
             <div class="header-right">
-                <div class="search-box">
-                    <input type="text" placeholder="Search transactions...">
-                    <i class="fas fa-search"></i>
-                </div>
+                
                 <div class="user-info">
                     <a href="${pageContext.request.contextPath}/CustomerSettingsController" class="user-name-link">
                         <span class="user-name">${user.firstName} ${user.lastName}</span>

@@ -22,112 +22,121 @@ public class WalletService {
                 System.out.println("Current balance for user " + username + ": " + balance);
                 return balance;
             } else {
-                System.out.println("No wallet found for user " + username);
+                System.out.println("No wallet found for user " + username + ". Creating new wallet.");
+                createWallet(username, 0.0);
+                return 0.0;
             }
             
         } catch (SQLException | ClassNotFoundException e) {
-            System.out.println("Error getting wallet balance: " + e.getMessage());
+            System.err.println("Error getting wallet balance: " + e.getMessage());
             e.printStackTrace();
+            return 0.0;
         }
+    }
+    
+    private boolean createWallet(String username, double initialBalance) {
+        String query = "INSERT INTO user_wallet (username, balance) VALUES (?, ?)";
         
-        return 0.0;
+        try (Connection conn = DbConfig.getDbConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+            
+            pstmt.setString(1, username);
+            pstmt.setDouble(2, initialBalance);
+            
+            int rows = pstmt.executeUpdate();
+            System.out.println("Created new wallet for user " + username + ". Rows affected: " + rows);
+            return rows > 0;
+            
+        } catch (SQLException | ClassNotFoundException e) {
+            System.err.println("Error creating wallet: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
     }
     
     public boolean processRecharge(String username, double amount, String paymentMethod) {
-        System.out.println("Starting recharge process for user: " + username + ", amount: " + amount + ", payment method: " + paymentMethod);
+        System.out.println("Processing recharge - Username: " + username + ", Amount: " + amount + ", Method: " + paymentMethod);
         
-        // Convert payment method to match enum values
-        String formattedPaymentMethod;
-        switch(paymentMethod.toLowerCase()) {
-            case "esewa":
-            case "khalti":
-            case "connectips":
-                formattedPaymentMethod = "Online";
-                break;
-            case "card":
-                formattedPaymentMethod = "Card";
-                break;
-            default:
-                formattedPaymentMethod = "Online";
-        }
-        
-        System.out.println("Formatted payment method: " + formattedPaymentMethod);
-        
-        // Using exact table and column names from the database
-        String checkQuery = "SELECT balance FROM user_wallet WHERE username = ?";
-        String insertWalletQuery = "INSERT INTO user_wallet (username, balance) VALUES (?, ?)";
-        String updateQuery = "UPDATE user_wallet SET balance = ? WHERE username = ?";
-        String insertTransactionQuery = "INSERT INTO transactions (vehicleNo, boothId, amount, paymentMode, status) VALUES (?, ?, ?, ?, 'Completed')";
-        
-        try (Connection conn = DbConfig.getDbConnection()) {
-            System.out.println("Database connection established");
+        Connection conn = null;
+        try {
+            conn = DbConfig.getDbConnection();
             conn.setAutoCommit(false);
             
-            try {
-                // Check if user has a wallet and get current balance
-                double currentBalance = 0.0;
-                boolean hasWallet = false;
-                try (PreparedStatement pstmt = conn.prepareStatement(checkQuery)) {
-                    pstmt.setString(1, username);
-                    ResultSet rs = pstmt.executeQuery();
-                    if (rs.next()) {
-                        hasWallet = true;
-                        currentBalance = rs.getDouble("balance");
-                        System.out.println("Current balance before recharge: " + currentBalance);
-                    }
+            // 1. Check if wallet exists and get current balance
+            String checkQuery = "SELECT balance FROM user_wallet WHERE username = ? FOR UPDATE";
+            double currentBalance = 0.0;
+            boolean walletExists = false;
+            
+            try (PreparedStatement pstmt = conn.prepareStatement(checkQuery)) {
+                pstmt.setString(1, username);
+                ResultSet rs = pstmt.executeQuery();
+                if (rs.next()) {
+                    walletExists = true;
+                    currentBalance = rs.getDouble("balance");
+                    System.out.println("Current balance: " + currentBalance);
                 }
-                System.out.println("User has wallet: " + hasWallet);
-                
-                // Create wallet if it doesn't exist
-                if (!hasWallet) {
-                    try (PreparedStatement pstmt = conn.prepareStatement(insertWalletQuery)) {
-                        pstmt.setString(1, username);
-                        pstmt.setDouble(2, amount); // Set initial balance to recharge amount
-                        int rows = pstmt.executeUpdate();
-                        System.out.println("Created new wallet with initial balance " + amount + ", rows affected: " + rows);
-                    }
-                } else {
-                    // Update wallet balance
-                    double newBalance = currentBalance + amount;
-                    try (PreparedStatement pstmt = conn.prepareStatement(updateQuery)) {
-                        pstmt.setDouble(1, newBalance);
-                        pstmt.setString(2, username);
-                        int rows = pstmt.executeUpdate();
-                        System.out.println("Updated wallet balance from " + currentBalance + " to " + newBalance + ", rows affected: " + rows);
-                        if (rows == 0) {
-                            throw new SQLException("Failed to update wallet balance");
-                        }
-                    }
-                }
-                
-                // Record transaction
-                try (PreparedStatement pstmt = conn.prepareStatement(insertTransactionQuery)) {
-                    pstmt.setString(1, "WALLET_RECHARGE");
-                    pstmt.setString(2, "WALLET");
-                    pstmt.setDouble(3, amount);
-                    pstmt.setString(4, formattedPaymentMethod);
-                    int rows = pstmt.executeUpdate();
-                    System.out.println("Recorded transaction, rows affected: " + rows);
-                    if (rows == 0) {
-                        throw new SQLException("Failed to record transaction");
-                    }
-                }
-                
-                conn.commit();
-                System.out.println("Recharge completed successfully");
-                return true;
-                
-            } catch (SQLException e) {
-                conn.rollback();
-                System.out.println("Error during recharge: " + e.getMessage());
-                e.printStackTrace();
-                return false;
             }
             
-        } catch (SQLException | ClassNotFoundException e) {
-            System.out.println("Error connecting to database: " + e.getMessage());
+            // 2. Create or update wallet
+            if (!walletExists) {
+                String createQuery = "INSERT INTO user_wallet (username, balance) VALUES (?, ?)";
+                try (PreparedStatement pstmt = conn.prepareStatement(createQuery)) {
+                    pstmt.setString(1, username);
+                    pstmt.setDouble(2, amount);
+                    int rows = pstmt.executeUpdate();
+                    if (rows == 0) throw new SQLException("Failed to create wallet");
+                    System.out.println("Created new wallet with balance: " + amount);
+                }
+            } else {
+                String updateQuery = "UPDATE user_wallet SET balance = ? WHERE username = ?";
+                try (PreparedStatement pstmt = conn.prepareStatement(updateQuery)) {
+                    double newBalance = currentBalance + amount;
+                    pstmt.setDouble(1, newBalance);
+                    pstmt.setString(2, username);
+                    int rows = pstmt.executeUpdate();
+                    if (rows == 0) throw new SQLException("Failed to update wallet balance");
+                    System.out.println("Updated balance to: " + newBalance);
+                }
+            }
+            
+            // 3. Record transaction with auto-increment transaction_id
+            String transactionQuery = "INSERT INTO transactions (vehicleNo, boothId, amount, paymentMode, status, transactionDate) VALUES (?, ?, ?, ?, ?, NOW())";
+            try (PreparedStatement pstmt = conn.prepareStatement(transactionQuery)) {
+                pstmt.setString(1, "WALLET_RECHARGE");
+                pstmt.setString(2, "ONLINE_RECHARGE"); // Special identifier for online recharge
+                pstmt.setDouble(3, amount);
+                pstmt.setString(4, paymentMethod);
+                pstmt.setString(5, "SUCCESS");
+                int rows = pstmt.executeUpdate();
+                if (rows == 0) throw new SQLException("Failed to record transaction");
+                System.out.println("Recorded transaction successfully");
+            }
+            
+            conn.commit();
+            System.out.println("Recharge completed successfully");
+            return true;
+            
+        } catch (Exception e) {
+            System.err.println("Error during recharge: " + e.getMessage());
             e.printStackTrace();
+            if (conn != null) {
+                try {
+                    conn.rollback();
+                    System.out.println("Transaction rolled back");
+                } catch (SQLException ex) {
+                    System.err.println("Error rolling back transaction: " + ex.getMessage());
+                }
+            }
             return false;
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.setAutoCommit(true);
+                    conn.close();
+                } catch (SQLException e) {
+                    System.err.println("Error closing connection: " + e.getMessage());
+                }
+            }
         }
     }
 } 

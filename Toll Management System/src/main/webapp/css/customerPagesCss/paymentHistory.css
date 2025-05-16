@@ -32,6 +32,7 @@ body {
     line-height: 1.6;
 }
 
+/* Layout */
 .dashboard-container {
     display: grid;
     grid-template-areas:
@@ -83,31 +84,15 @@ body {
     gap: 20px;
 }
 
-.search-box {
-    display: flex;
-    align-items: center;
-    background: #f1f5f9;
-    border-radius: 8px;
-    padding: 8px 15px;
-    width: 300px;
-}
-
-.search-box input {
-    border: none;
-    background: none;
-    outline: none;
-    width: 100%;
-    padding-right: 10px;
-}
-
-.search-box i {
-    color: var(--text-gray);
-}
 
 .user-info {
     display: flex;
     align-items: center;
     gap: 12px;
+}
+
+.user-name-link {
+    text-decoration: none;
 }
 
 .user-name {
@@ -126,6 +111,10 @@ body {
     color: white;
 }
 
+.user-avatar i {
+    font-size: 1.5rem;
+}
+
 .logout-btn {
     color: var(--text-gray);
     text-decoration: none;
@@ -137,6 +126,102 @@ body {
 .logout-btn:hover {
     background: #f1f5f9;
     color: var(--danger);
+}
+
+/* Content Header */
+.content-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.content-header h2 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: var(--dark-bg);
+}
+
+.date-display {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-gray);
+    font-weight: 500;
+}
+
+.date-display i {
+    color: var(--blue-primary);
+}
+
+/* Transaction Date */
+.transaction-date {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.transaction-date .date {
+    font-weight: 500;
+    color: var(--dark-bg);
+}
+
+.transaction-date .time {
+    font-size: 0.85rem;
+    color: var(--text-gray);
+}
+
+/* Vehicle Info */
+.vehicle-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.vehicle-info i {
+    font-size: 1.2rem;
+    color: var(--blue-primary);
+    width: 24px;
+    text-align: center;
+}
+
+.vehicle-details {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.vehicle-number {
+    font-weight: 500;
+    color: var(--dark-bg);
+}
+
+.vehicle-type {
+    font-size: 0.85rem;
+    color: var(--text-gray);
+}
+
+/* Empty State */
+.no-transactions {
+    text-align: center;
+    padding: 40px 0;
+}
+
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.empty-state i {
+    font-size: 3rem;
+    color: var(--text-gray);
+}
+
+.empty-state p {
+    color: var(--text-gray);
+    font-size: 1.1rem;
 }
 
 /* Sidebar Styles */
@@ -194,35 +279,13 @@ body {
     border-left: 4px solid var(--blue-accent);
 }
 
-/* Main Content Styles */
+/* Main Content */
 .main-content {
     grid-area: main;
     padding: 20px;
+    margin-top: var(--header-height);
     background-color: var(--main-bg);
     min-height: calc(100vh - var(--header-height));
-    margin-top: var(--header-height);
-}
-
-/* Content Header */
-.content-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 25px;
-}
-
-.content-header h2 {
-    font-size: 1.8rem;
-    color: var(--dark-bg);
-    font-weight: 600;
-}
-
-.date-display {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    color: var(--text-gray);
-    font-weight: 500;
 }
 
 /* Stats Cards */
@@ -283,16 +346,13 @@ body {
 .recent-activity {
     background: white;
     border-radius: 12px;
-    padding: 25px;
     box-shadow: var(--card-shadow);
     margin-bottom: 30px;
 }
 
 .section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
+    padding: 25px;
+    border-bottom: 1px solid #e2e8f0;
 }
 
 .section-header h3 {
@@ -301,11 +361,9 @@ body {
     color: var(--dark-bg);
 }
 
-.view-all {
-    color: var(--blue-primary);
-    text-decoration: none;
-    font-size: 0.9rem;
-    font-weight: 500;
+.table-container {
+    padding: 0 25px;
+    overflow-x: auto;
 }
 
 .activity-table {
@@ -323,36 +381,35 @@ body {
 .activity-table th {
     font-weight: 600;
     color: var(--text-gray);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 15px 12px;
+    background-color: #f8fafc;
+}
+
+.activity-table td {
+    font-size: 0.95rem;
+    color: var(--dark-bg);
+}
+
+.activity-table tr:hover {
     background: #f8fafc;
 }
 
-.transaction-date {
-    display: flex;
-    flex-direction: column;
+.activity-table tr:last-child td {
+    border-bottom: none;
 }
 
-.transaction-date .date {
-    font-weight: 500;
-}
-
-.transaction-date .time {
-    font-size: 0.85rem;
-    color: var(--text-gray);
-}
-
-.vehicle-info {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
+/* Status */
 .status {
     display: inline-flex;
     align-items: center;
-    gap: 5px;
-    padding: 4px 8px;
-    border-radius: 6px;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 20px;
     font-size: 0.85rem;
+    font-weight: 500;
 }
 
 .status.success {
@@ -370,17 +427,11 @@ body {
     color: var(--danger);
 }
 
-.empty-state {
-    text-align: center;
-    padding: 40px;
-    color: var(--text-gray);
+.status i {
+    font-size: 0.9rem;
 }
 
-.empty-state i {
-    font-size: 2rem;
-    margin-bottom: 10px;
-}
-
+/* Receipt Button */
 .receipt-btn {
     color: var(--blue-primary);
     background: rgba(59, 130, 246, 0.1);
@@ -390,10 +441,12 @@ body {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    text-decoration: none;
 }
 
 .receipt-btn:hover {
     background: rgba(59, 130, 246, 0.2);
+    transform: translateY(-2px);
 }
 
 /* Pagination */
@@ -402,7 +455,8 @@ body {
     justify-content: center;
     align-items: center;
     gap: 10px;
-    padding-top: 20px;
+    padding: 25px;
+    border-top: 1px solid #e2e8f0;
 }
 
 .page-btn {
@@ -433,14 +487,22 @@ body {
 
 /* Responsive Design */
 @media (max-width: 1200px) {
-    .charts-section {
-        grid-template-columns: 1fr;
+    .search-box {
+        width: 200px;
+    }
+    
+    .stats-cards {
+        grid-template-columns: repeat(2, 1fr);
     }
 }
 
 @media (max-width: 992px) {
     .search-box {
-        width: 200px;
+        display: none;
+    }
+    
+    .activity-table {
+        min-width: 800px;
     }
 }
 
@@ -448,31 +510,36 @@ body {
     :root {
         --sidebar-width: 0px;
     }
-
+    
     .dashboard-container {
         grid-template-columns: 1fr;
     }
-
+    
     .sidebar {
         transform: translateX(-100%);
     }
-
+    
     .sidebar.active {
         transform: translateX(0);
-        width: 250px;
     }
-
+    
     .main-content {
-        margin-left: 0;
         padding: 15px;
     }
-
+    
     .stats-cards {
         grid-template-columns: 1fr;
     }
-
-    .header-right {
-        gap: 10px;
+    
+    .content-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    
+    .date-display {
+        width: 100%;
+        justify-content: flex-end;
     }
 }
 
@@ -480,24 +547,24 @@ body {
     .dashboard-header {
         padding: 0 15px;
     }
-
-    .search-box {
-        display: none;
-    }
-
+    
     .user-name {
         display: none;
     }
-
-    .content-header {
+    
+    .vehicle-info {
         flex-direction: column;
+        gap: 5px;
         align-items: flex-start;
-        gap: 10px;
     }
-
-    .activity-table {
-        display: block;
-        overflow-x: auto;
-        white-space: nowrap;
+    
+    .vehicle-details {
+        align-items: flex-start;
+    }
+    
+    .activity-table th,
+    .activity-table td {
+        padding: 12px 15px;
+        font-size: 0.9rem;
     }
 }

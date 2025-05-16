@@ -1,4 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,7 +11,7 @@
 </head>
 <body>
     <div class="dashboard-container">
-        <!-- Header (Same as other pages) -->
+        
         <header class="dashboard-header">
             <div class="header-left">
                 <img src="${pageContext.request.contextPath}/resources/logo.png" alt="Nepal Toll System Logo" class="logo">
@@ -26,7 +27,7 @@
             </div>
         </header>
 
-        <!-- Sidebar (Same as other pages) -->
+        
         <aside class="sidebar">
             <nav class="sidebar-nav">
                 <ul>
@@ -247,36 +248,51 @@
         // Handle recharge button click
         rechargeBtn.addEventListener('click', function() {
             if (selectedAmount > 0) {
-                // Create form data
-                const formData = new FormData();
-                formData.append('amount', selectedAmount);
+                console.log('Initiating recharge process...');
+                console.log('Amount:', selectedAmount);
+                console.log('Payment Method:', selectedMethod);
+                
+                // Create URL-encoded form data
+                const formData = new URLSearchParams();
+                formData.append('amount', selectedAmount.toString());
                 formData.append('paymentMethod', selectedMethod);
+                
+                console.log('Form data:', formData.toString());
                 
                 // Submit form
                 fetch('${pageContext.request.contextPath}/RechargeWalletController', {
                     method: 'POST',
-                    body: formData
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: formData.toString()
                 })
                 .then(response => {
+                    console.log('Server response:', response);
                     if (response.redirected) {
+                        console.log('Redirecting to:', response.url);
                         window.location.href = response.url;
                     } else {
                         return response.text().then(text => {
+                            console.log('Response text:', text);
                             if (text.includes('success')) {
                                 window.location.reload();
                             } else {
                                 const errorMsg = text.includes('error=') ? 
                                     decodeURIComponent(text.split('error=')[1]) : 
                                     'Failed to recharge wallet. Please try again.';
+                                console.error('Error message:', errorMsg);
                                 alert(errorMsg);
                             }
                         });
                     }
                 })
                 .catch(error => {
-                    console.error('Error:', error);
+                    console.error('Network error:', error);
                     alert('Network error occurred. Please check your connection and try again.');
                 });
+            } else {
+                alert('Please select or enter a valid amount');
             }
         });
     });
