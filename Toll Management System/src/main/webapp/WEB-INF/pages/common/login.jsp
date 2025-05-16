@@ -21,6 +21,12 @@ min-height: 100vh;">
         <form action="${pageContext.request.contextPath}/login" method="post">
             <h1>Login</h1>
 
+            <% if (request.getAttribute("success") != null) { %>
+                <div class="success-message">
+                    <%= request.getAttribute("success") %>
+                </div>
+            <% } %>
+
             <% if (request.getAttribute("error") != null) { %>
                 <div class="error-message">
                     <%= request.getAttribute("error") %>

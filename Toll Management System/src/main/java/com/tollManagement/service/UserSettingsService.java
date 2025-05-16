@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 import com.tollManagement.config.DbConfig;
 import com.tollManagement.model.UserModel;
 
@@ -27,9 +29,9 @@ public class UserSettingsService {
                 user.setPhone(rs.getString("phone"));
                 user.setProvince(rs.getString("province"));
                 user.setPostalCode(rs.getString("postal_code"));
-                user.setVehicleType(rs.getString("vehicle_type"));
-                user.setVehicleNumber(rs.getString("vehicle_number"));
                 user.setCitizenshipNumber(rs.getString("citizenship_number"));
+                user.setAccountType(rs.getString("account_type"));
+                
                 return user;
             }
             
@@ -144,5 +146,63 @@ public class UserSettingsService {
             e.printStackTrace();
             return false;
         }
+    }
+
+    /**
+     * Gets combined user and vehicle details for a given username.
+     * This method joins the User and Vehicle tables to get all relevant information.
+     * @param username The username to fetch details for
+     * @return Map containing both user and vehicle details
+     */
+    public Map<String, Object> getCombinedUserDetails(String username) {
+        Map<String, Object> details = new HashMap<>();
+        
+        String query = """
+            SELECT u.*, v.vehicle_type, v.vehicle_number, v.total_toll_paid,
+                   v.last_toll_date, v.monthly_pass_expiry, v.is_active as vehicle_active
+            FROM User u
+            LEFT JOIN vehicle v ON u.username = v.username
+            WHERE u.username = ?
+        """;
+        
+        try (Connection conn = DbConfig.getDbConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+            
+            pstmt.setString(1, username);
+            ResultSet rs = pstmt.executeQuery();
+            
+            if (rs.next()) {
+                // User details
+                UserModel user = new UserModel();
+                user.setUsername(rs.getString("username"));
+                user.setFirstName(rs.getString("first_name"));
+                user.setLastName(rs.getString("last_name"));
+                user.setEmail(rs.getString("email"));
+                user.setPhone(rs.getString("phone"));
+                user.setProvince(rs.getString("province"));
+                user.setPostalCode(rs.getString("postal_code"));
+                user.setCitizenshipNumber(rs.getString("citizenship_number"));
+                user.setAccountType(rs.getString("account_type"));
+                
+                details.put("user", user);
+                
+                // Vehicle details (if any)
+                if (rs.getString("vehicle_number") != null) {
+                    Map<String, Object> vehicleDetails = new HashMap<>();
+                    vehicleDetails.put("vehicleType", rs.getString("vehicle_type"));
+                    vehicleDetails.put("vehicleNumber", rs.getString("vehicle_number"));
+                    vehicleDetails.put("totalTollPaid", rs.getDouble("total_toll_paid"));
+                    vehicleDetails.put("lastTollDate", rs.getTimestamp("last_toll_date"));
+                    vehicleDetails.put("monthlyPassExpiry", rs.getDate("monthly_pass_expiry"));
+                    vehicleDetails.put("isActive", rs.getBoolean("vehicle_active"));
+                    details.put("vehicle", vehicleDetails);
+                }
+            }
+            
+        } catch (SQLException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        
+        return details;
     }
 } 

@@ -1,6 +1,6 @@
 package com.tollManagement.controller;
 
-import java.io.IOException; 
+import java.io.IOException;  
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -8,6 +8,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.tollManagement.model.UserModel;
 import com.tollManagement.service.LoginService;
@@ -71,21 +73,36 @@ public class LoginController extends HttpServlet {
                         stmt.setString(1, username);
                         ResultSet rs = stmt.executeQuery();
                         if (rs.next()) {
-                            UserModel user = new UserModel(
-                                rs.getString("username"),
-                                rs.getString("password"),
-                                rs.getString("account_type"),
-                                rs.getString("first_name"),
-                                rs.getString("last_name"),
-                                rs.getString("email"),
-                                rs.getString("phone"),
-                                rs.getString("province"),
-                                rs.getString("postal_code"),
-                                rs.getString("vehicle_type"),
-                                rs.getString("vehicle_number"),
-                                rs.getString("citizenship_number")
-                            );
+                            UserModel user = new UserModel();
+                            user.setUsername(rs.getString("username"));
+                            user.setPassword(rs.getString("password"));
+                            user.setAccountType(rs.getString("account_type"));
+                            user.setFirstName(rs.getString("first_name"));
+                            user.setLastName(rs.getString("last_name"));
+                            user.setEmail(rs.getString("email"));
+                            user.setPhone(rs.getString("phone"));
+                            user.setProvince(rs.getString("province"));
+                            user.setPostalCode(rs.getString("postal_code"));
+                            user.setCitizenshipNumber(rs.getString("citizenship_number"));
+                            
                             SessionUtil.setAttribute(request, "user", user);
+                        }
+                    }
+
+                    // Fetch vehicle data separately
+                    String vehicleQuery = "SELECT * FROM vehicle WHERE username = ?";
+                    try (PreparedStatement stmt = conn.prepareStatement(vehicleQuery)) {
+                        stmt.setString(1, username);
+                        ResultSet rs = stmt.executeQuery();
+                        if (rs.next()) {
+                            Map<String, Object> vehicleDetails = new HashMap<>();
+                            vehicleDetails.put("vehicleType", rs.getString("vehicle_type"));
+                            vehicleDetails.put("vehicleNumber", rs.getString("vehicle_number"));
+                            vehicleDetails.put("totalTollPaid", rs.getDouble("total_toll_paid"));
+                            vehicleDetails.put("lastTollDate", rs.getTimestamp("last_toll_date"));
+                            vehicleDetails.put("monthlyPassExpiry", rs.getDate("monthly_pass_expiry"));
+                            
+                            SessionUtil.setAttribute(request, "vehicle", vehicleDetails);
                         }
                     }
                 } catch (SQLException | ClassNotFoundException e) {

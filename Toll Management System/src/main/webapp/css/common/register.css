@@ -51,6 +51,36 @@ body {
 }
 
 .form-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        .error-message {
+            color: #dc3545;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        input:invalid {
+            border-color: #dc3545;
+        }
+        
+        input:invalid + .error-message {
+            display: block;
+        }
+        
+        input:valid {
+            border-color: #28a745;
+        }
+        
+        .form-text {
+            color: #6c757d;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+.form-group {
   flex: 1;
   min-width: 250px;
   padding: 0 15px;

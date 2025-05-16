@@ -73,7 +73,7 @@ public class LoginService extends HttpServlet {
 
     private UserModel authenticateUser(String username, String password) 
             throws SQLException, ClassNotFoundException {
-        String query = "SELECT username, password, account_type, first_name, last_name, email, phone, province, postal_code, vehicle_type, vehicle_number FROM User WHERE username = ?";
+        String query = "SELECT username, password, account_type, first_name, last_name, email, phone, province, postal_code, citizenship_number FROM User WHERE username = ?";
         
         try (Connection conn = DbConfig.getDbConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -84,22 +84,21 @@ public class LoginService extends HttpServlet {
             if (rs.next()) {
                 String dbUsername = rs.getString("username");
                 String dbPassword = rs.getString("password");
-                String account_type= rs.getString("account_type");
+                String account_type = rs.getString("account_type");
                 String firstName = rs.getString("first_name");
                 String lastName = rs.getString("last_name");
                 String email = rs.getString("email");
                 String phone = rs.getString("phone");
                 String province = rs.getString("province");
                 String postalCode = rs.getString("postal_code");
-                String vehicleType = rs.getString("vehicle_type");
-                String vehicleNumber = rs.getString("vehicle_number");
                 String citizenshipNumber = rs.getString("citizenship_number");
-
                 
                 // Verify password
                 if (PasswordUtil.verifyPassword(password, dbPassword)) {
                     // Create and return UserModel object
-                    UserModel user = new UserModel(dbUsername, dbPassword, account_type, firstName, lastName, email, phone, province, postalCode, vehicleType, vehicleNumber,citizenshipNumber);
+                    UserModel user = new UserModel(dbUsername, dbPassword, account_type, 
+                                                 firstName, lastName, email, phone, 
+                                                 province, postalCode, citizenshipNumber);
                     return user;
                 }
             }

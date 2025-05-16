@@ -22,10 +22,20 @@
         <div class="header">
             <h1>TollPass Management System</h1>
             <p>Create your account for seamless toll payments</p>
-            
-       
-            
         </div>
+        
+        <!-- Add general message sections -->
+        <% if (request.getAttribute("success") != null) { %>
+            <div class="success-message">
+                <%= request.getAttribute("success") %>
+            </div>
+        <% } %>
+        
+        <% if (request.getAttribute("error") != null) { %>
+            <div class="error-message general-error">
+                <%= request.getAttribute("error") %>
+            </div>
+        <% } %>
         
         <div class="form-container">
             <form action="${pageContext.request.contextPath}/register" method="post">
@@ -33,13 +43,25 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label for="first-name">First Name</label>
-                        <input type="text" name="first_name" id="first-name" required>
-                         
+                        <input type="text" 
+                               name="first_name" 
+                               id="first-name" 
+                               required 
+                               pattern="^[a-zA-Z]{2,30}$"
+                               title="First name should be 2-30 letters"
+                               onchange="validateField(this)">
+                        <small class="form-text error-message"></small>
                     </div>
                     <div class="form-group">
                         <label for="last-name">Last Name</label>
-                        <input type="text" name="last_name" id="last-name" required>
-                         
+                        <input type="text" 
+                               name="last_name" 
+                               id="last-name" 
+                               required 
+                               pattern="^[a-zA-Z]{2,30}$"
+                               title="Last name should be 2-30 letters"
+                               onchange="validateField(this)">
+                        <small class="form-text error-message"></small>
                     </div>
                 </div>
                 
@@ -47,37 +69,65 @@
                 
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="email">Email Address</label>
-                        <input type="email" name="email" id="email" required placeholder="eg. John@gmail.com">
-                         
+                        <label for="email">Email</label>
+                        <input type="email" 
+                               name="email" 
+                               id="email" 
+                               required 
+                               pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+                               title="Please enter a valid email address"
+                               onchange="validateField(this)">
+                        <small class="form-text error-message"></small>
                     </div>
                     <div class="form-group">
                         <label for="phone">Phone Number</label>
                         <div class="phone-input">
                             <span class="phone-prefix">+977-</span>
-                            <input type="tel" id="phone" name="phone" class="phone-field" required placeholder="9XXXXXXXX">
-                             
+                            <input type="tel" 
+                                   id="phone" 
+                                   name="phone" 
+                                   class="phone-field" 
+                                   required 
+                                   pattern="^[9][0-9]{9}$"
+                                   title="Please enter a valid 10-digit mobile number starting with 9"
+                                   onchange="validateField(this)">
                         </div>
+                        <small class="form-text error-message"></small>
                     </div>
                 </div>
                 
                 <div class="form-row">
                     <div class="form-group">
                         <label for="password">Password</label>
-                        <input type="password" name="password" id="password" required>
-                         
+                        <input type="password" 
+                               name="password" 
+                               id="password" 
+                               required
+                               pattern="^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$"
+                               title="Password must be at least 8 characters long and include both letters and numbers"
+                               onchange="validateField(this)">
+                        <small class="form-text error-message"></small>
                     </div>
                     <div class="form-group">
                         <label for="confirm-password">Confirm Password</label>
-                        <input type="password" name="confirm_password" id="confirm-password" required>
-                         
+                        <input type="password" 
+                               name="confirm_password" 
+                               id="confirm-password" 
+                               required
+                               onchange="validatePasswordMatch()">
+                        <small class="form-text error-message"></small>
                     </div>
                 </div>
                 <div class="form-row">
     				<div class="form-group username-group">
         				<label for="username">Username</label>
-       					 <input type="text" name="username" id="username" required 
-               				placeholder="Choose a unique username">
+       					 <input type="text" 
+               				name="username" 
+               				id="username" 
+               				required 
+               				pattern="^[a-zA-Z0-9_]{4,20}$"
+               				title="Username should be 4-20 characters long and can contain letters, numbers, and underscores"
+               				onchange="validateField(this)">
         				<div class="username-availability"></div>
         				 <!-- NEW: Add a div for server-side validation errors -->
         				<div class="error-message" style="color: red;">
@@ -89,7 +139,13 @@
 				<div class="form-row">
     				<div class="form-group">
         				<label for="citizenship-number">Citizenship Number</label>
-        				<input type="text" name="citizenship_number" id="citizenship-number" required placeholder="Enter your citizenship number">
+        				<input type="text" 
+               				name="citizenship_number" 
+               				id="citizenship-number" 
+               				required 
+               				pattern="^[0-9]{10}$"
+               				title="Please enter a valid 10-digit citizenship number"
+               				onchange="validateField(this)">
         				 
     				</div>
 				</div>
@@ -133,8 +189,15 @@
                         </div>
                         <div class="form-group">
                             <label for="vehicle-number">Vehicle Registration Number</label>
-                            <input type="text" name="vehicle_number" id="vehicle-number" required placeholder="e.g. MH01AB1234">
-                             
+                            <input type="text" 
+                                   name="vehicle_number" 
+                                   id="vehicle-number" 
+                                   required 
+                                   placeholder="e.g. BA0998"
+                                   pattern="^[A-Z]{2}[0-9]{4}$"
+                                   title="Please enter a valid vehicle number format: BA0998"
+                                   style="text-transform: uppercase;">
+                            <small class="form-text">Format: Province Code (2 letters) + Numbers (4 digits)</small>
                         </div>
                     </div>
                 </div>
@@ -179,5 +242,8 @@
             </form>
         </div>
     </div>
+
+
+    <script src="${pageContext.request.contextPath}/js/validation.js"></script>
 </body>
 </html>

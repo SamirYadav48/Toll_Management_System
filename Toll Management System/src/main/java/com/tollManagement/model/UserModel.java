@@ -1,8 +1,5 @@
 package com.tollManagement.model;
 
-import java.time.LocalDateTime;
-import com.tollManagement.util.*;
-
 /**
  * Represents a user in the Toll Management System.
  */
@@ -12,7 +9,6 @@ public class UserModel {
     private String username;
     private String password;
     private String accountType;
-
     private String firstName;
     private String lastName;
     private String email;
@@ -21,28 +17,14 @@ public class UserModel {
     private String postalCode;
     private String citizenshipNumber;
 
-    private boolean isActive;
-    private int failedLoginAttempts;
-    private LocalDateTime lastLogin;
-    private LocalDateTime accountCreated;
-
-    // Vehicle details
-    private String vehicleType;
-    private String vehicleNumber;
-
-   
-
     // Constructors
 
     // Default constructor
     public UserModel() {
-        this.accountCreated = LocalDateTime.now();
-        this.isActive = true;
     }
 
     // Constructor for login (username and password)
     public UserModel(String username, String password) {
-        this();
         this.username = username;
         this.password = password;
     }
@@ -57,7 +39,7 @@ public class UserModel {
     public UserModel(String username, String password, String accountType, 
                      String firstName, String lastName, String email, 
                      String phone, String province, String postalCode, 
-                     String vehicleType, String vehicleNumber, String citizenshipNumber) {
+                     String citizenshipNumber) {
         this(username, password, accountType);
         this.firstName = firstName;
         this.lastName = lastName;
@@ -65,33 +47,16 @@ public class UserModel {
         this.phone = phone;
         this.province = province;
         this.postalCode = postalCode;
-        this.vehicleType = vehicleType;
-        this.vehicleNumber = vehicleNumber;
         this.citizenshipNumber = citizenshipNumber;
     }
 
     // Constructor with key info (used in list view, search, etc.)
     public UserModel(String username, String accountType, String email, String phone, String citizenshipNumber) {
-        this();
         this.username = username;
         this.accountType = accountType;
         this.email = email;
         this.phone = phone;
         this.citizenshipNumber = citizenshipNumber;
-    }
-
-    // Login/Security Methods
-    public void resetFailedAttempts() {
-        this.failedLoginAttempts = 0;
-    }
-
-    public void recordSuccessfulLogin() {
-        this.lastLogin = LocalDateTime.now();
-        this.resetFailedAttempts();
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     // Getters and Setters
@@ -105,6 +70,10 @@ public class UserModel {
 
     public String getPassword() {
         return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getAccountType() {
@@ -163,43 +132,6 @@ public class UserModel {
         this.postalCode = postalCode;
     }
 
-    public boolean isActive() {
-        return isActive;
-    }
-
-    public void setActive(boolean isActive) {
-        this.isActive = isActive;
-    }
-
-    public int getFailedLoginAttempts() {
-        return failedLoginAttempts;
-    }
-
-    public LocalDateTime getLastLogin() {
-        return lastLogin;
-    }
-
-    public LocalDateTime getAccountCreated() {
-        return accountCreated;
-    }
-
-    public String getVehicleType() {
-        return vehicleType;
-    }
-
-    public void setVehicleType(String vehicleType) {
-        this.vehicleType = vehicleType;
-    }
-
-    public String getVehicleNumber() {
-        return vehicleNumber;
-    }
-
-    public void setVehicleNumber(String vehicleNumber) {
-        this.vehicleNumber = vehicleNumber;
-    }
-
-    // Getter and Setter for Citizenship Number
     public String getCitizenshipNumber() {
         return citizenshipNumber;
     }

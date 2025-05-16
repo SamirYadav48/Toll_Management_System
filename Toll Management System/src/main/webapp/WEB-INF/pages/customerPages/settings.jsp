@@ -261,7 +261,7 @@
         </footer>
     </div>
 
-    <script src="${pageContext.request.contextPath}/css/settings.js"></script>
+    <script src="${pageContext.request.contextPath}/JS/settings.js"></script>
     
 </body>
 </html>

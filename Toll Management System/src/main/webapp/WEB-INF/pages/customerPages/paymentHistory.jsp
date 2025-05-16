@@ -1,4 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -18,7 +20,7 @@
             <div class="header-right">
                 <div class="user-info">
                     <a href="${pageContext.request.contextPath}/CustomerSettingsController" class="user-name-link">
-                        <span class="user-name">Bina Karki</span>
+                        <span class="user-name">${user.firstName} ${user.lastName}</span>
                     </a>
                     <img src="user-avatar.jpg" alt="User Avatar" class="user-avatar">
                 </div>
@@ -42,30 +44,20 @@
         <main class="main-content">
             <div class="content-header">
                 <h2>Payment History</h2>
-                <div class="date-filter">
-                    <i class="fas fa-calendar-alt"></i>
-                    <select id="time-period">
-                        <option value="7">Last 7 Days</option>
-                        <option value="30" selected>Last 30 Days</option>
-                        <option value="90">Last 3 Months</option>
-                        <option value="365">Last Year</option>
-                        <option value="0">All Time</option>
-                    </select>
-                </div>
             </div>
 
             <div class="payment-history">
                 <div class="stats-summary">
                     <div class="stat-box">
-                        <div class="stat-value">NPR 8,250.00</div>
+                        <div class="stat-value">NPR ${transactionStats.totalAmount}</div>
                         <div class="stat-label">Total Spent</div>
                     </div>
                     <div class="stat-box">
-                        <div class="stat-value">24</div>
+                        <div class="stat-value">${transactionStats.totalTransactions}</div>
                         <div class="stat-label">Total Transactions</div>
                     </div>
                     <div class="stat-box">
-                        <div class="stat-value">NPR 550.00</div>
+                        <div class="stat-value">NPR ${transactionStats.averageAmount}</div>
                         <div class="stat-label">Average per Trip</div>
                     </div>
                 </div>
@@ -85,27 +77,38 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>Apr 14, 2025</td>
-                                <td>#TXN20251404</td>
-                                <td>Nagdhunga</td>
-                                <td>Ba 1 Cha 1234</td>
-                                <td>Wallet</td>
-                                <td>550.00</td>
-                                <td><span class="status success">Success</span></td>
-                                <td><button class="receipt-btn"><i class="fas fa-download"></i></button></td>
-                            </tr>
-                            <!-- More rows would go here -->
+                            <c:forEach items="${transactions}" var="tx">
+                                <tr>
+                                    <td><fmt:formatDate value="${tx.date}" pattern="MMM dd, yyyy"/></td>
+                                    <td>${tx.transactionId}</td>
+                                    <td>${tx.tollPlaza}</td>
+                                    <td>${tx.vehicleNumber}</td>
+                                    <td>${tx.paymentMethod}</td>
+                                    <td>${tx.amount}</td>
+                                    <td><span class="status ${tx.status.toLowerCase()}">${tx.status}</span></td>
+                                    <td>
+                                        <a href="${pageContext.request.contextPath}/PaymentHistoryController/download?transactionId=${tx.transactionId}" class="receipt-btn">
+                                            <i class="fas fa-download"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            </c:forEach>
                         </tbody>
                     </table>
                 </div>
 
                 <div class="pagination">
-                    <button class="page-btn" disabled><i class="fas fa-chevron-left"></i></button>
-                    <button class="page-btn active">1</button>
-                    <button class="page-btn">2</button>
-                    <button class="page-btn">3</button>
-                    <button class="page-btn"><i class="fas fa-chevron-right"></i></button>
+                    <c:if test="${currentPage > 1}">
+                        <a href="?page=${currentPage - 1}" class="page-btn"><i class="fas fa-chevron-left"></i></a>
+                    </c:if>
+                    
+                    <c:forEach begin="1" end="${totalPages}" var="page">
+                        <a href="?page=${page}" class="page-btn ${page == currentPage ? 'active' : ''}">${page}</a>
+                    </c:forEach>
+                    
+                    <c:if test="${currentPage < totalPages}">
+                        <a href="?page=${currentPage + 1}" class="page-btn"><i class="fas fa-chevron-right"></i></a>
+                    </c:if>
                 </div>
             </div>
         </main>
@@ -119,35 +122,5 @@
             </div>
         </footer>
     </div>
-
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Time period filter
-        const timePeriodSelect = document.getElementById('time-period');
-        timePeriodSelect.addEventListener('change', function() {
-            // In a real app, this would fetch filtered data
-            console.log('Filtering for last ' + this.value + ' days');
-        });
-
-        // Receipt download buttons
-        document.querySelectorAll('.receipt-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                // In a real app, this would download the receipt
-                alert('Downloading receipt...');
-            });
-        });
-
-        // Pagination buttons
-        document.querySelectorAll('.page-btn:not(:disabled)').forEach(btn => {
-            btn.addEventListener('click', function() {
-                if (!this.classList.contains('active')) {
-                    document.querySelector('.page-btn.active').classList.remove('active');
-                    this.classList.add('active');
-                    // In a real app, this would load the page
-                }
-            });
-        });
-    });
-    </script>
 </body>
 </html>
