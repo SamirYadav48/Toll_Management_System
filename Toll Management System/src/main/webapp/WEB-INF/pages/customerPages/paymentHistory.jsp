@@ -111,40 +111,36 @@
                                 <tr>
                                     <td>
                                         <div class="transaction-date">
-                                            <span class="date"><fmt:formatDate value="${tx.date}" pattern="MMM dd, yyyy"/></span>
-                                            <span class="time"><fmt:formatDate value="${tx.date}" pattern="hh:mm a"/></span>
+                                            <span class="date"><fmt:formatDate value="${tx.transactionDate}" pattern="MMM dd, yyyy"/></span>
+                                            <span class="time"><fmt:formatDate value="${tx.transactionDate}" pattern="hh:mm a"/></span>
                                         </div>
                                     </td>
                                     <td>${tx.transactionId}</td>
-                                    <td>${tx.tollPlaza}</td>
+                                    <td>${tx.boothId}</td>
                                     <td>
                                         <div class="vehicle-info">
-                                            <i class="fas fa-${tx.vehicleType eq 'Car' ? 'car' : 
-                                                      tx.vehicleType eq 'Truck' ? 'truck' : 
-                                                      tx.vehicleType eq 'Bus' ? 'bus' : 'motorcycle'}"></i>
+                                            <i class="fas fa-car"></i>
                                             <div class="vehicle-details">
-                                                <span class="vehicle-number">${tx.vehicleNumber}</span>
-                                                <span class="vehicle-type">${tx.vehicleType}</span>
+                                                <span class="vehicle-number">${tx.vehicleNo}</span>
+                                                <span class="vehicle-type">Wallet Recharge</span>
                                             </div>
                                         </div>
                                     </td>
                                     <td>
-                                        <i class="fas fa-${tx.paymentMethod eq 'RFID' ? 'credit-card' : 
-                                                  tx.paymentMethod eq 'CASH' ? 'money-bill-wave' : 'wallet'}"></i>
-                                        ${tx.paymentMethod}
+                                        <i class="fas fa-wallet"></i>
+                                        Wallet Recharge
                                     </td>
                                     <td>रु <fmt:formatNumber value="${tx.amount}" pattern="#,##0.00"/></td>
                                     <td>
-                                        <span class="status ${tx.status.toLowerCase()}">
-                                            <i class="fas fa-${tx.status eq 'SUCCESS' ? 'check-circle' : 
-                                                      tx.status eq 'PENDING' ? 'clock' : 'exclamation-circle'}"></i>
-                                            ${tx.status}
+                                        <span class="status success">
+                                            <i class="fas fa-check-circle"></i>
+                                            Success
                                         </span>
                                     </td>
                                     <td>
-                                        <a href="${pageContext.request.contextPath}/PaymentHistoryController/download?transactionId=${tx.transactionId}" class="receipt-btn">
+                                        <button class="download-receipt" onclick="downloadReceipt(${tx.transactionId})">
                                             <i class="fas fa-download"></i>
-                                        </a>
+                                        </button>
                                     </td>
                                 </tr>
                             </c:forEach>

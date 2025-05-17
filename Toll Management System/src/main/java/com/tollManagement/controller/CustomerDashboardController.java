@@ -1,9 +1,7 @@
  package com.tollManagement.controller;
 
 import com.tollManagement.config.DbConfig; 
-import com.tollManagement.model.TollRateModel;
 import com.tollManagement.model.UserModel;
-
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -69,10 +67,6 @@ public class CustomerDashboardController extends HttpServlet {
 			List<Map<String, Object>> recentTransactions = getRecentTransactions(conn, username);
 			request.setAttribute("recentTransactions", recentTransactions);
 
-			// Get toll rates
-			List<TollRateModel> tollRates = getTollRates(conn);
-			request.setAttribute("tollRates", tollRates);
-
 			// Get spending chart data
 			Map<String, Object> spendingData = getSpendingData(conn, username);
 			request.setAttribute("spendingLabels", gson.toJson(spendingData.get("labels")));
@@ -80,8 +74,12 @@ public class CustomerDashboardController extends HttpServlet {
 
 			// Get usage chart data
 			Map<String, Object> usageData = getUsageData(conn, username);
+			System.out.println("Usage Data:");
+			System.out.println("Labels: " + usageData.get("labels"));
+			System.out.println("Usage Counts: " + usageData.get("usageCounts"));
+			System.out.println("Amounts: " + usageData.get("amounts"));
 			request.setAttribute("usageLabels", gson.toJson(usageData.get("labels")));
-			request.setAttribute("usageData", gson.toJson(usageData.get("data")));
+			request.setAttribute("usageData", gson.toJson(usageData));
 
 			// Forward to the dashboard JSP
 			request.getRequestDispatcher("/WEB-INF/pages/customerPages/customerDashboard.jsp").forward(request, response);
@@ -178,56 +176,19 @@ public class CustomerDashboardController extends HttpServlet {
 		return transactions;
 	}
 
-	private List<TollRateModel> getTollRates(Connection conn) throws SQLException {
-		List<TollRateModel> tollRates = new ArrayList<>();
-		String query = "SELECT * FROM toll_rates WHERE is_active = 1 ORDER BY vehicle_type";
-		System.out.println("Executing query: " + query);
-		
-		try (PreparedStatement stmt = conn.prepareStatement(query);
-			 ResultSet rs = stmt.executeQuery()) {
-			
-			System.out.println("Query executed successfully");
-			while (rs.next()) {
-				System.out.println("Found toll rate: " + 
-					"ID=" + rs.getInt("rate_id") + ", " +
-					"Type=" + rs.getString("vehicle_type") + ", " +
-					"Single=" + rs.getDouble("single_pass_rate") + ", " +
-					"Monthly=" + rs.getDouble("monthly_pass_rate"));
-					
-				TollRateModel rate = new TollRateModel(
-					rs.getInt("rate_id"),
-					rs.getString("vehicle_type"),
-					rs.getDouble("single_pass_rate"),
-					rs.getDouble("monthly_pass_rate"),
-					rs.getString("description"),
-					rs.getBoolean("is_active")
-				);
-				tollRates.add(rate);
-			}
-			System.out.println("Total toll rates found: " + tollRates.size());
-		} catch (SQLException e) {
-			System.err.println("Error fetching toll rates: " + e.getMessage());
-			e.printStackTrace();
-			throw e;
-		}
-		return tollRates;
-	}
-
 	private Map<String, Object> getSpendingData(Connection conn, String username) throws SQLException {
 		Map<String, Object> chartData = new HashMap<>();
 		List<String> labels = new ArrayList<>();
 		List<Double> data = new ArrayList<>();
-
-		String query = """
-			SELECT DATE_FORMAT(transactionDate, '%b %d') as date,
-				   SUM(amount) as total_amount
-			FROM transactions t
-			JOIN vehicle v ON t.vehicleNo = v.vehicle_number
-			WHERE v.username = ?
-			AND transactionDate >= DATE_SUB(CURRENT_DATE, INTERVAL 7 DAY)
-			GROUP BY DATE(transactionDate)
-			ORDER BY transactionDate
-		""";
+		        String query = """
+            SELECT DATE_FORMAT(transactionDate, '%b %d') as date,
+                   SUM(amount) as total_amount
+            FROM transactions t
+            WHERE (t.vehicleNo = (SELECT username FROM user_wallet WHERE username = ?) OR t.vehicleNo = 'WALLET_RECHARGE')
+            AND transactionDate >= DATE_SUB(CURRENT_DATE, INTERVAL 7 DAY)
+            GROUP BY DATE(transactionDate)
+            ORDER BY transactionDate
+        """;
 
 		try (PreparedStatement stmt = conn.prepareStatement(query)) {
 			stmt.setString(1, username);
@@ -244,47 +205,50 @@ public class CustomerDashboardController extends HttpServlet {
 	}
 
 	private Map<String, Object> getUsageData(Connection conn, String username) throws SQLException {
-		Map<String, Object> chartData = new HashMap<>();
-		List<String> labels = new ArrayList<>();
-		List<Double> data = new ArrayList<>();
+        Map<String, Object> chartData = new HashMap<>();
+        List<String> labels = new ArrayList<>();
+        List<Double> usageCounts = new ArrayList<>();
+        List<Double> amounts = new ArrayList<>();
 
-		String query = """
-				SELECT 
-					v.vehicle_type,
-					v.vehicle_number,
-					COUNT(t.transactionId) as usage_count,
-					SUM(t.amount) as total_amount
-				FROM vehicle v
-				LEFT JOIN transactions t ON v.vehicle_number = t.vehicleNo
-				WHERE v.username = ?
-				AND v.is_active = TRUE
-				AND (t.transactionDate IS NULL OR 
-					 t.transactionDate >= DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY))
-				GROUP BY v.vehicle_type, v.vehicle_number
-				ORDER BY usage_count DESC, total_amount DESC
-				""";
+        String query = """
+                SELECT 
+                    v.vehicle_type,
+                    v.vehicle_number,
+                    COUNT(t.transactionId) as usage_count,
+                    COALESCE(SUM(t.amount), 0) as total_amount
+                FROM vehicle v
+                LEFT JOIN transactions t ON v.vehicle_number = t.vehicleNo
+                WHERE v.username = ?
+                AND v.is_active = TRUE
+                GROUP BY v.vehicle_type, v.vehicle_number
+                ORDER BY usage_count DESC, total_amount DESC
+                """;
 
-		try (PreparedStatement stmt = conn.prepareStatement(query)) {
-			stmt.setString(1, username);
-			ResultSet rs = stmt.executeQuery();
-			
-			while (rs.next()) {
-				String vehicleType = rs.getString("vehicle_type");
-				String vehicleNumber = rs.getString("vehicle_number");
-				int usageCount = rs.getInt("usage_count");
-				double totalAmount = rs.getDouble("total_amount");
-				
-				// Format label to include both vehicle type and number
-				String label = vehicleType + " (" + vehicleNumber + ")";
-				labels.add(label);
-				data.add((double) usageCount);
-			}
-		}
+        try (PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, username);
+            ResultSet rs = stmt.executeQuery();
+            
+            while (rs.next()) {
+                String vehicleType = rs.getString("vehicle_type");
+                String vehicleNumber = rs.getString("vehicle_number");
+                int usageCount = rs.getInt("usage_count");
+                double totalAmount = rs.getDouble("total_amount");
+                
+                // Format label to include both vehicle type and number
+                String label = vehicleType + " (" + vehicleNumber + ")";
+                labels.add(label);
+                
+                // Store data in separate lists for each dataset
+                usageCounts.add((double) usageCount);
+                amounts.add(totalAmount);
+            }
+        }
 
-		chartData.put("labels", labels);
-		chartData.put("data", data);
-		return chartData;
-	}
+        chartData.put("labels", labels);
+        chartData.put("usageCounts", usageCounts);
+        chartData.put("amounts", amounts);
+        return chartData;
+    }
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)

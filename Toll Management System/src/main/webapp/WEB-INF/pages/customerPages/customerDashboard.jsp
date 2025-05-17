@@ -104,7 +104,7 @@
                     </div>
                     <div class="card-content">
                         <h3>Account Balance</h3>
-                        <p class="amount">रु <fmt:formatNumber value="${accountBalance}" pattern="#,##0.00"/></p>
+                            <p class="amount">रु <fmt:formatNumber value="${accountBalance}" pattern="#,##0.00"/></p>
                         <c:if test="${accountBalance < 500}">
                             <span class="warning-text">Low balance! Please recharge.</span>
                         </c:if>
@@ -330,27 +330,48 @@
 
             if (usageLabelsEl && usageDataEl) {
                 const usageLabels = JSON.parse(usageLabelsEl.value || '[]');
-                const usageData = JSON.parse(usageDataEl.value || '[]');
+                console.log('Usage Labels:', usageLabels);
                 
                 if (usageLabels.length > 0 && document.getElementById('usageChart')) {
+                    const usageDataObj = JSON.parse(document.getElementById('usageData').value);
+                    console.log('Usage Data:', usageDataObj);
+                    console.log('Usage Counts:', usageDataObj.usageCounts);
+                    console.log('Amounts:', usageDataObj.amounts);
+                    
                     const usageChart = new Chart(document.getElementById('usageChart').getContext('2d'), {
-                        type: 'doughnut',
+                        type: 'bar',
                         data: {
                             labels: usageLabels,
-                            datasets: [{
-                                data: usageData,
-                                backgroundColor: [
-                                    '#4CAF50',
-                                    '#2196F3',
-                                    '#FFC107',
-                                    '#9C27B0',
-                                    '#F44336'
-                                ]
-                            }]
+                            datasets: [
+                                {
+                                    label: 'Usage Count',
+                                    data: usageDataObj.usageCounts,
+                                    backgroundColor: '#4CAF50',
+                                    borderColor: '#4CAF50',
+                                    borderWidth: 1
+                                },
+                                {
+                                    label: 'Total Amount (रु)',
+                                    data: usageDataObj.amounts,
+                                    backgroundColor: '#2196F3',
+                                    borderColor: '#2196F3',
+                                    borderWidth: 1
+                                }
+                            ]
                         },
                         options: {
                             responsive: true,
-                            maintainAspectRatio: false
+                            maintainAspectRatio: false,
+                            scales: {
+                                y: {
+                                    beginAtZero: true
+                                }
+                            },
+                            plugins: {
+                                legend: {
+                                    position: 'top'
+                                }
+                            }
                         }
                     });
                 }

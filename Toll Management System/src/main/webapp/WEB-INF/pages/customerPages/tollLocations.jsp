@@ -1,11 +1,12 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Toll Management System - Toll Locations</title>
+    <title>PathPay - Toll Locations</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/customerPagesCss/tollLocations.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
@@ -108,7 +109,9 @@
             </div>
 
             <div class="toll-locations-container">
-                <div class="map-container" id="toll-map"></div>
+                <div class="map-container">
+                    <div id="toll-map" style="height: 700px; width: 100%;"></div>
+                </div>
                 
                 <div class="toll-list">
                     <div class="list-header">
@@ -141,8 +144,8 @@
                 </div>
             </div>
         </main>
-
-        <footer class="dashboard-footer">
+    </div>
+<footer class="dashboard-footer">
             <p>&copy; 2025 Nepal Toll Management System. All rights reserved.</p>
             <div class="footer-links">
                 <a href="#">Privacy Policy</a>
@@ -150,18 +153,26 @@
                 <a href="#">Contact Us</a>
             </div>
         </footer>
-    </div>
-
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Initialize map
-        const map = L.map('toll-map').setView([27.7172, 85.3240], 7); // Centered on Nepal
-        
-        // Add tile layer (OpenStreetMap)
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(map);
+         // Initialize map
+         const map = L.map('toll-map', {
+             center: [27.7103, 85.3222], // Center on Kathmandu
+             zoom: 8,
+             layers: [
+                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                 })
+             ]
+         });
+         
+         // Configure map
+         map.attributionControl.setPrefix(''); // Remove Leaflet prefix from attribution
+         map.setView([27.7103, 85.3222], 8); // Centered on Kathmandu
+         
+         // Add zoom controls
+         L.control.zoom({ position: 'topright' }).addTo(map);
 
         // Get toll locations from JSP
         const tollBooths = [
@@ -171,23 +182,57 @@
                     name: "${booth.location}",
                     status: "${booth.status}",
                     province: "${booth.province}",
-                    coords: [${booth.latitude}, ${booth.longitude}]
+                    latitude: ${booth.latitude},
+                    longitude: ${booth.longitude}
                 }${!status.last ? ',' : ''}
             </c:forEach>
         ];
 
         // Add markers to map
         const markers = {};
+        
+        // First set up the map bounds to include all toll booths
+        const bounds = L.latLngBounds([]);
+        
         tollBooths.forEach(booth => {
-            const marker = L.marker(booth.coords).addTo(map)
-                .bindPopup(`
-                    <b>${booth.name}</b><br>
-                    ID: ${booth.id}<br>
-                    Status: ${booth.status}<br>
-                    Province: ${booth.province}
-                `);
+            // Validate coordinates
+            if (!booth.latitude || !booth.longitude) {
+                console.warn('Missing coordinates for booth:', booth);
+                return;
+            }
+            
+            // Create coordinates array
+            const coords = [Number(booth.latitude), Number(booth.longitude)];
+            
+            console.log('Creating marker for booth:', booth);
+            console.log('Coordinates:', coords);
+            
+            // Create marker with booth ID
+            const marker = L.marker(coords).addTo(map);
+            marker.bindPopup(`
+                <b>${booth.name}</b><br>
+                ID: ${booth.id}<br>
+                Status: ${booth.status}<br>
+                Province: ${booth.province}
+            `);
+            
+            // Store marker with booth ID
             markers[booth.id] = marker;
+            
+            // Add to bounds
+            bounds.extend(coords);
+            
+            // Add booth ID to marker options
+            marker.options.boothId = booth.id;
         });
+        
+        // Fit map to include all markers
+        if (bounds.isValid()) {
+            map.fitBounds(bounds, { padding: [50, 50] });
+        } else {
+            // If no valid coordinates, use default Nepal center
+            map.setView([27.7103, 85.3222], 8);
+        }
 
         // Search functionality
         const searchInput = document.getElementById('searchInput');
@@ -238,15 +283,58 @@
             });
         }
 
-        // List item click events
-        document.querySelectorAll('.toll-item').forEach(item => {
-            item.addEventListener('click', function() {
-                const boothId = this.querySelector('.toll-id').textContent;
-                const booth = tollBooths.find(b => b.id === boothId);
-                if (booth) {
-                    map.setView(booth.coords, 12);
+        // Add click handlers after map initialization
+         const tollItems = document.querySelectorAll('.toll-item');
+         tollItems.forEach(item => {
+             item.addEventListener('click', function() {
+                 const boothId = this.querySelector('.toll-id').textContent;
+                 const booth = tollBooths.find(b => b.id === boothId);
+                 if (booth) {
+                     console.log('Clicking on booth:', booth);
+                     console.log('Coordinates:', booth.latitude, booth.longitude);
+                     
+                     const coords = [Number(booth.latitude), Number(booth.longitude)];
+                     console.log('Parsed coordinates:', coords);
+                     
+                     // Validate coordinates
+                     if (!coords[0] || !coords[1] || isNaN(coords[0]) || isNaN(coords[1])) {
+                         console.error('Invalid coordinates for booth:', booth);
+                         return;
+                     }
+                     
+                     // Smoothly pan to the location
+                     map.flyTo(coords, 12, {
+                         duration: 1.5,
+                         animate: true
+                     });
+                    
+                    // Open the popup if it exists
+                    const marker = markers[boothId];
+                    if (marker) {
+                        marker.openPopup();
+                    }
+                    
+                    // Update active state
                     document.querySelectorAll('.toll-item').forEach(i => i.classList.remove('active'));
                     this.classList.add('active');
+                }
+            });
+        });
+
+        // Add marker click handlers
+        Object.values(markers).forEach(marker => {
+            marker.on('click', function(e) {
+                const boothId = e.target.options.boothId;
+                const booth = tollBooths.find(b => b.id === boothId);
+                if (booth) {
+                    // Update the active state in the list
+                    document.querySelectorAll('.toll-item').forEach(item => {
+                        if (item.querySelector('.toll-id').textContent === boothId) {
+                            item.classList.add('active');
+                        } else {
+                            item.classList.remove('active');
+                        }
+                    });
                 }
             });
         });

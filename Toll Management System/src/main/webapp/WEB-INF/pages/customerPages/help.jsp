@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Toll Management System - Help Center</title>
+    <title>PathPay - Help Center</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/customerPagesCss/help.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
@@ -16,10 +16,6 @@
                 <h1>PathPay</h1>
             </div>
             <div class="header-right">
-                <div class="search-box">
-                    <input type="text" placeholder="Search transactions...">
-                    <i class="fas fa-search"></i>
-                </div>
                 <div class="user-info">
                     <a href="${pageContext.request.contextPath}/CustomerSettingsController" class="user-name-link">
                         <span class="user-name">${user.firstName} ${user.lastName}</span>
@@ -85,11 +81,7 @@
 
         <main class="main-content">
             <div class="content-header">
-                <h2>Help Center</h2>
-                <div class="search-help">
-                    <input type="text" placeholder="Search help articles...">
-                    <button><i class="fas fa-search"></i></button>
-                </div>
+                <h2>Help Center</h2>               
             </div>
 
             <div class="help-container">
@@ -100,7 +92,6 @@
                         </div>
                         <h3>Payments & Billing</h3>
                         <p>Questions about toll payments, invoices, and account balance</p>
-                        <a href="#" class="view-articles">View Articles <i class="fas fa-chevron-right"></i></a>
                     </div>
                     
                     <div class="category-card">
@@ -109,7 +100,6 @@
                         </div>
                         <h3>Vehicle Management</h3>
                         <p>How to add, remove or update your registered vehicles</p>
-                        <a href="#" class="view-articles">View Articles <i class="fas fa-chevron-right"></i></a>
                     </div>
                     
                     <div class="category-card">
@@ -118,7 +108,6 @@
                         </div>
                         <h3>Toll Passes</h3>
                         <p>Information about toll rates, passes and routes</p>
-                        <a href="#" class="view-articles">View Articles <i class="fas fa-chevron-right"></i></a>
                     </div>
                     
                     <div class="category-card">
@@ -127,7 +116,6 @@
                         </div>
                         <h3>Account Help</h3>
                         <p>Managing your profile, password and security settings</p>
-                        <a href="#" class="view-articles">View Articles <i class="fas fa-chevron-right"></i></a>
                     </div>
                 </div>
 
@@ -143,8 +131,25 @@
                                 <p>To add a new vehicle, go to your Dashboard and click on "Manage Vehicles". From there, click "Add New Vehicle" and enter your vehicle details including license plate number and vehicle type.</p>
                             </div>
                         </div>
-                        <!-- More FAQ items would go here -->
-                    </div>
+						<div class="faq-item">
+    						<button class="faq-question">
+        						Can I transfer my RFID tag to another vehicle?
+       							 <i class="fas fa-chevron-down"></i>
+    						</button>
+    						<div class="faq-answer">
+        						<p>No, RFID tags are vehicle-specific and cannot be transferred. Each tag is registered to one vehicle's license plate. If you get a new vehicle, you'll need to purchase a new RFID tag.</p>
+    						</div>
+						</div>
+
+						<div class="faq-item">
+    						<button class="faq-question">
+        						What vehicle types are supported?
+        						<i class="fas fa-chevron-down"></i>
+    						</button>
+    						<div class="faq-answer">
+        						<p>We support all standard vehicle types including cars, motorcycles, trucks, buses, and trailers. Toll rates vary by vehicle class.</p>
+    						</div>
+						</div>                    
                 </div>
 
                 <div class="contact-support">
@@ -169,6 +174,7 @@
                             <button class="chat-btn">Start Chat</button>
                         </div>
                     </div>
+                </div>
                 </div>
             </div>
         </main>

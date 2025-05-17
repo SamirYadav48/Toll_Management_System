@@ -48,6 +48,17 @@ public class RechargeWalletController extends HttpServlet {
 			request.setAttribute("user", user);
 			request.setAttribute("balance", balance);
 			
+			// Get selected amount from request parameters
+			String amountParam = request.getParameter("amount");
+			if (amountParam != null) {
+				try {
+					double selectedAmount = Double.parseDouble(amountParam);
+					request.setAttribute("selectedAmount", selectedAmount);
+				} catch (NumberFormatException e) {
+					System.err.println("Invalid amount format: " + amountParam);
+				}
+			}
+			
 			// Check for success/error messages
 			String success = request.getParameter("success");
 			String error = request.getParameter("error");
@@ -72,53 +83,60 @@ public class RechargeWalletController extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		HttpSession session = request.getSession();
-		UserModel user = (UserModel) session.getAttribute("user");
-		
-		if (user == null) {
-			System.out.println("User not logged in, redirecting to login page");
-			response.sendRedirect(request.getContextPath() + "/login");
-			return;
-		}
-		
-		// Handle recharge request
-		String amount = request.getParameter("amount");
-		String paymentMethod = request.getParameter("paymentMethod");
-		
-		System.out.println("Received recharge request - Amount: " + amount + ", Payment Method: " + paymentMethod);
-		
-		if (amount != null && paymentMethod != null) {
-			try {
-				double rechargeAmount = Double.parseDouble(amount);
-				
-				if (rechargeAmount <= 0) {
-					System.out.println("Invalid amount: " + rechargeAmount);
-					response.sendRedirect(request.getContextPath() + "/RechargeWalletController?error=Invalid amount");
-					return;
-				}
-				
-				System.out.println("Processing recharge for user: " + user.getUsername());
-				boolean success = walletService.processRecharge(user.getUsername(), rechargeAmount, paymentMethod);
-				
-				if (success) {
-					System.out.println("Recharge successful");
-					response.sendRedirect(request.getContextPath() + "/RechargeWalletController?success=true");
-				} else {
-					System.out.println("Recharge failed");
-					response.sendRedirect(request.getContextPath() + "/RechargeWalletController?error=Transaction failed");
-				}
-			} catch (NumberFormatException e) {
-				System.err.println("Invalid amount format: " + amount);
-				response.sendRedirect(request.getContextPath() + "/RechargeWalletController?error=Invalid amount format");
-			} catch (Exception e) {
-				System.err.println("Unexpected error during recharge: " + e.getMessage());
-				e.printStackTrace();
-				response.sendRedirect(request.getContextPath() + "/RechargeWalletController?error=System error occurred");
-			}
-		} else {
-			System.out.println("Missing parameters - Amount: " + amount + ", Payment Method: " + paymentMethod);
-			response.sendRedirect(request.getContextPath() + "/RechargeWalletController?error=Missing required parameters");
-		}
-	}
+        HttpSession session = request.getSession();
+        UserModel user = (UserModel) session.getAttribute("user");
+        
+        if (user == null) {
+            System.out.println("User not logged in, redirecting to login page");
+            response.sendRedirect(request.getContextPath() + "/login");
+            return;
+        }
+        
+        // Handle recharge request
+        String amount = request.getParameter("amount");
+        String paymentMethod = request.getParameter("paymentMethod");
+        
+        System.out.println("Received recharge request - Amount: " + amount + ", Payment Method: " + paymentMethod);
+        
+        if (amount != null && paymentMethod != null) {
+            try {
+                double rechargeAmount = Double.parseDouble(amount);
+                
+                if (rechargeAmount <= 0) {
+                    System.out.println("Invalid amount: " + rechargeAmount);
+                    response.sendRedirect(request.getContextPath() + "/RechargeWalletController?error=Invalid amount");
+                    return;
+                }
+                
+                // Calculate service fee (2%)
+                double serviceFee = rechargeAmount * 0.02;
+                double userAmount = rechargeAmount - serviceFee; // Amount that goes to user's wallet
+                
+                System.out.println("Processing recharge for user: " + user.getUsername());
+                System.out.println("Recharge Amount: " + rechargeAmount + ", Service Fee: " + serviceFee + ", User Amount: " + userAmount);
+                
+                // Save to database - pass the total amount for transaction and user amount for wallet
+                boolean success = walletService.processRecharge(user.getUsername(), rechargeAmount + serviceFee, paymentMethod, rechargeAmount, serviceFee);
+                
+                if (success) {
+                    System.out.println("Recharge successful");
+                    response.sendRedirect(request.getContextPath() + "/RechargeWalletController?success=true");
+                } else {
+                    System.out.println("Recharge failed");
+                    response.sendRedirect(request.getContextPath() + "/RechargeWalletController?error=Transaction failed");
+                }
+            } catch (NumberFormatException e) {
+                System.err.println("Invalid amount format: " + amount);
+                response.sendRedirect(request.getContextPath() + "/RechargeWalletController?error=Invalid amount format");
+            } catch (Exception e) {
+                System.err.println("Unexpected error during recharge: " + e.getMessage());
+                e.printStackTrace();
+                response.sendRedirect(request.getContextPath() + "/RechargeWalletController?error=System error occurred");
+            }
+        } else {
+            System.out.println("Missing parameters - Amount: " + amount + ", Payment Method: " + paymentMethod);
+            response.sendRedirect(request.getContextPath() + "/RechargeWalletController?error=Missing required parameters");
+        }
+    }
 
 }

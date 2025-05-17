@@ -54,61 +54,34 @@ public class WalletService {
         }
     }
     
-    public boolean processRecharge(String username, double amount, String paymentMethod) {
-        System.out.println("Processing recharge - Username: " + username + ", Amount: " + amount + ", Method: " + paymentMethod);
+    public boolean processRecharge(String username, double rechargeAmount, String paymentMethod, double originalAmount, double serviceFee) {
+        System.out.println("Processing recharge - Username: " + username + ", Amount: " + rechargeAmount + ", Method: " + paymentMethod);
+        System.out.println("Original Amount: " + originalAmount + ", Service Fee: " + serviceFee);
         
         Connection conn = null;
         try {
             conn = DbConfig.getDbConnection();
             conn.setAutoCommit(false);
             
-            // 1. Check if wallet exists and get current balance
-            String checkQuery = "SELECT balance FROM user_wallet WHERE username = ? FOR UPDATE";
-            double currentBalance = 0.0;
-            boolean walletExists = false;
-            
-            try (PreparedStatement pstmt = conn.prepareStatement(checkQuery)) {
-                pstmt.setString(1, username);
-                ResultSet rs = pstmt.executeQuery();
-                if (rs.next()) {
-                    walletExists = true;
-                    currentBalance = rs.getDouble("balance");
-                    System.out.println("Current balance: " + currentBalance);
-                }
-            }
-            
-            // 2. Create or update wallet
-            if (!walletExists) {
-                String createQuery = "INSERT INTO user_wallet (username, balance) VALUES (?, ?)";
-                try (PreparedStatement pstmt = conn.prepareStatement(createQuery)) {
-                    pstmt.setString(1, username);
-                    pstmt.setDouble(2, amount);
-                    int rows = pstmt.executeUpdate();
-                    if (rows == 0) throw new SQLException("Failed to create wallet");
-                    System.out.println("Created new wallet with balance: " + amount);
-                }
-            } else {
-                String updateQuery = "UPDATE user_wallet SET balance = ? WHERE username = ?";
-                try (PreparedStatement pstmt = conn.prepareStatement(updateQuery)) {
-                    double newBalance = currentBalance + amount;
-                    pstmt.setDouble(1, newBalance);
-                    pstmt.setString(2, username);
-                    int rows = pstmt.executeUpdate();
-                    if (rows == 0) throw new SQLException("Failed to update wallet balance");
-                    System.out.println("Updated balance to: " + newBalance);
-                }
-            }
-            
-            // 3. Record transaction with auto-increment transaction_id
-            String transactionQuery = "INSERT INTO transactions (vehicleNo, boothId, amount, paymentMode, status, transactionDate) VALUES (?, ?, ?, ?, 'SUCCESS', NOW())";
+            // 1. Record transaction with total amount
+            String transactionQuery = "INSERT INTO transactions (vehicleNo, boothId, amount, paymentMode, status, transactionDate) VALUES (?, NULL, ?, ?, 'Completed', NOW())";
             try (PreparedStatement pstmt = conn.prepareStatement(transactionQuery)) {
                 pstmt.setString(1, "WALLET_RECHARGE");
-                pstmt.setString(2, "ONLINE_RECHARGE"); // Special identifier for online recharge
-                pstmt.setDouble(3, amount);
-                pstmt.setString(4, paymentMethod);
+                pstmt.setDouble(2, rechargeAmount + serviceFee); // Store total amount (original + service fee)
+                pstmt.setString(3, paymentMethod);
                 int rows = pstmt.executeUpdate();
                 if (rows == 0) throw new SQLException("Failed to record transaction");
-                System.out.println("Recorded transaction successfully");
+                System.out.println("Recorded transaction successfully - Total amount: " + (rechargeAmount + serviceFee));
+            }
+            
+            // 2. Update wallet balance after transaction is recorded
+            String updateQuery = "UPDATE user_wallet SET balance = balance + ? WHERE username = ?";
+            try (PreparedStatement pstmt = conn.prepareStatement(updateQuery)) {
+                pstmt.setDouble(1, originalAmount); // Only add the original amount to wallet
+                pstmt.setString(2, username);
+                int rows = pstmt.executeUpdate();
+                if (rows == 0) throw new SQLException("Failed to update wallet balance");
+                System.out.println("Updated wallet balance with: " + originalAmount);
             }
             
             conn.commit();

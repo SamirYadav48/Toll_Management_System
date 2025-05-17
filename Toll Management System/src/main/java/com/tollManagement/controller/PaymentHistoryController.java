@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.List;
 import com.tollManagement.model.TransactionModel;
+import com.tollManagement.model.TransactionStatsModel;
 import com.tollManagement.model.UserModel;
 import com.tollManagement.service.PaymentHistoryService;
 
@@ -54,11 +55,11 @@ public class PaymentHistoryController extends HttpServlet {
 
 		// Get payment history and stats
 		List<TransactionModel> paymentHistory = paymentHistoryService.getPaymentHistory(user.getUsername(), days);
-//		TransactionStats stats = paymentHistoryService.getPaymentStats(user.getUsername(), days);
+		TransactionStatsModel stats = paymentHistoryService.getPaymentStats(user.getUsername(), days);
 
 		// Set attributes for JSP
-		request.setAttribute("paymentHistory", paymentHistory);
-//		request.setAttribute("stats", stats);
+		request.setAttribute("transactions", paymentHistory);
+		request.setAttribute("transactionStats", stats);
 		request.setAttribute("selectedDays", days);
 
 		// Forward to JSP

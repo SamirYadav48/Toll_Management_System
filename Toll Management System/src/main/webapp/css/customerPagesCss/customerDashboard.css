@@ -595,6 +595,27 @@ body {
     color: var(--blue-primary);
 }
 
+
+.no-data {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #666;
+            padding: 2rem;
+        }
+        
+        .no-data i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #ccc;
+        }
+        
+        .no-data p {
+            font-size: 1rem;
+            text-align: center;
+        }
 /* Responsive Design */
 @media (max-width: 1200px) {
     .charts-section {

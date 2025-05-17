@@ -84,8 +84,8 @@ public class AdminDashboardController extends HttpServlet {
 			// Get today's revenue and compare with yesterday
 			String revenueSql = """
 				SELECT 
-					COALESCE(SUM(CASE WHEN DATE(transactionDate) = CURRENT_DATE THEN amount END), 0) as today_revenue,
-					COALESCE(SUM(CASE WHEN DATE(transactionDate) = DATE_SUB(CURRENT_DATE, INTERVAL 1 DAY) THEN amount END), 0) as yesterday_revenue
+					COALESCE(SUM(CASE WHEN DATE(transactionDate) = CURRENT_DATE THEN amount * 0.02 END), 0) as today_revenue,
+					COALESCE(SUM(CASE WHEN DATE(transactionDate) = DATE_SUB(CURRENT_DATE, INTERVAL 1 DAY) THEN amount * 0.02 END), 0) as yesterday_revenue
 				FROM transactions
 				WHERE DATE(transactionDate) >= DATE_SUB(CURRENT_DATE, INTERVAL 1 DAY)
 			""";
@@ -222,7 +222,7 @@ public class AdminDashboardController extends HttpServlet {
 		String sql = String.format("""
 			SELECT 
 				DATE_FORMAT(transactionDate, '%s') as label,
-				SUM(amount) as revenue,
+				SUM(amount * 0.02) as revenue,
 				COUNT(*) as traffic
 			FROM transactions
 			WHERE DATE(transactionDate) >= %s
