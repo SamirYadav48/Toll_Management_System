@@ -283,7 +283,6 @@ body {
 .main-content {
     grid-area: main;
     padding: 20px;
-    margin-top: var(--header-height);
     background-color: var(--main-bg);
     min-height: calc(100vh - var(--header-height));
 }

@@ -126,6 +126,10 @@ body {
     color: white;
 }
 
+.user-avatar i {
+    font-size: 1.5rem;
+}
+
 .logout-btn {
     color: var(--text-gray);
     text-decoration: none;

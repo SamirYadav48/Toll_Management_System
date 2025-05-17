@@ -12,29 +12,73 @@
     <div class="dashboard-container">
         <header class="dashboard-header">
             <div class="header-left">
-                <img src="${pageContext.request.contextPath}/resources/logo.png" alt="Nepal Toll System Logo" class="logo">
-                <h1>Toll Management System</h1>
+                <img src="${pageContext.request.contextPath}/resources/logo.png" alt="PathPay Logo" class="logo">
+                <h1>PathPay</h1>
             </div>
             <div class="header-right">
+                <div class="search-box">
+                    <input type="text" placeholder="Search transactions...">
+                    <i class="fas fa-search"></i>
+                </div>
                 <div class="user-info">
                     <a href="${pageContext.request.contextPath}/CustomerSettingsController" class="user-name-link">
-                        <span class="user-name">Bina Karki</span>
+                        <span class="user-name">${user.firstName} ${user.lastName}</span>
                     </a>
-                    <img src="user-avatar.jpg" alt="User Avatar" class="user-avatar">
+                    <div class="user-avatar">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
                 </div>
+                <a href="${pageContext.request.contextPath}/login" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                </a>
             </div>
         </header>
 
         <aside class="sidebar">
             <nav class="sidebar-nav">
                 <ul>
-                    <li><a href="${pageContext.request.contextPath}/CustomerDashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-                    <li><a href="${pageContext.request.contextPath}/PaymentHistoryController"><i class="fas fa-money-bill-wave"></i> Payment History</a></li>
-                    <li><a href="${pageContext.request.contextPath}/TollLocationsController"><i class="fas fa-map-marked-alt"></i> Toll Locations</a></li>
-                    <li><a href="${pageContext.request.contextPath}/GetCardController"><i class="fas fa-credit-card"></i> Get RFID Card</a></li>
-                    <li><a href="${pageContext.request.contextPath}/RechargeWalletController"><i class="fas fa-wallet"></i> Recharge Wallet</a></li>                    
-                    <li><a href="${pageContext.request.contextPath}/CustomerSettingsController"><i class="fas fa-cog"></i> Settings</a></li>
-                    <li class="active"><a href="${pageContext.request.contextPath}/HelpController"><i class="fas fa-question-circle"></i> Help</a></li>
+                    <li>
+                        <a href="${pageContext.request.contextPath}/CustomerDashboard">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="${pageContext.request.contextPath}/PaymentHistoryController">
+                            <i class="fas fa-money-bill-wave"></i>
+                            <span>Payment History</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="${pageContext.request.contextPath}/TollLocationsController">
+                            <i class="fas fa-map-marked-alt"></i>
+                            <span>Toll Locations</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="${pageContext.request.contextPath}/GetCardController">
+                            <i class="fas fa-credit-card"></i>
+                            <span>Get RFID Card</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="${pageContext.request.contextPath}/RechargeWalletController">
+                            <i class="fas fa-wallet"></i>
+                            <span>Recharge Wallet</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="${pageContext.request.contextPath}/CustomerSettingsController">
+                            <i class="fas fa-cog"></i>
+                            <span>Settings</span>
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="${pageContext.request.contextPath}/HelpController">
+                            <i class="fas fa-question-circle"></i>
+                            <span>Help</span>
+                        </a>
+                    </li>
                 </ul>
             </nav>
         </aside>
