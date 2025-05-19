@@ -49,6 +49,14 @@
       </div>
       <div class="header-right">
         <div class="user-profile" id="userProfile">
+        <div class="status-filter">
+                    <select id="statusFilter" onchange="filterByStatus(this.value)">
+                        <option value="">All Statuses</option>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                        <option value="maintenance">Maintenance</option>
+                    </select>
+                </div>
   					<a href="${pageContext.request.contextPath}/SettingController"><i class="fas fa-user"></i>
   					<span class="user-name">${user.firstName} ${user.lastName}</span>
   					</a>
@@ -84,9 +92,9 @@
                   <td>${booth.transactionsToday}</td>
                   <td>${booth.revenueToday}</td>
                   <td>
-                    <button class="btn-icon"><i class="fas fa-edit"></i></button>
-                    <button class="btn-icon"><i class="fas fa-cog"></i></button>
-                    <button class="btn-icon danger"><i class="fas fa-power-off"></i></button>
+                    <button class="btn-icon danger" onclick="deleteBooth('${booth.boothId}')">
+                      <i class="fas fa-trash"></i>
+                    </button>
                   </td>
                 </tr>
             </c:forEach>
@@ -94,65 +102,48 @@
         </table>
       </div>
 
-      <div class="pagination">
-        <button class="btn-pagination" disabled><i class="fas fa-chevron-left"></i></button>
-        <button class="btn-pagination active">1</button>
-        <button class="btn-pagination">2</button>
-        <button class="btn-pagination">3</button>
-        <button class="btn-pagination"><i class="fas fa-chevron-right"></i></button>
-      </div>
+      
     </div>
   </main>
 
-  <!-- Modal -->
-  <div class="modal" id="addBoothModal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3>Add New Toll Booth</h3>
-        <button class="close-modal">&times;</button>
-      </div>
-      <div class="modal-body">
-        <form>
-          <div class="form-group">
-            <label for="boothId">Booth ID</label>
-            <input type="text" id="boothId" placeholder="e.g., BTH-NP-005"/>
-          </div>
-          <div class="form-group">
-            <label for="location">Location</label>
-            <select id="location">
-              <option value="">Select Location</option>
-              <option>East-West Hwy - Bardibas</option>
-              <option>Prithvi Hwy - Naubise</option>
-              <option>BP Highway - Khurkot</option>
-              <option>Kathmandu Ring Road - Kalanki</option>
-              <option>Muglin-Pokhara Road</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="boothType">Booth Type</label>
-            <select id="boothType">
-              <option value="standard">Standard</option>
-              <option value="express">Express</option>
-              <option value="commercial">Commercial</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="initialStatus">Initial Status</label>
-            <select id="initialStatus">
-              <option value="active">Active</option>
-              <option value="inactive">Inactive</option>
-              <option value="maintenance">Maintenance</option>
-            </select>
-          </div>
-          <div class="form-actions">
-            <button type="button" class="btn btn-secondary close-modal">Cancel</button>
-            <button type="submit" class="btn btn-primary">Add Booth</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
+  
 
-  <script src="/chapter 1/tollbooth.js"></script>
+  <script>
+    // Function to filter toll booths by status
+    function filterByStatus(status) {
+        // Update the URL with the status parameter
+        const url = new URL(window.location.href);
+        if (status) {
+            url.searchParams.set('status', status);
+        } else {
+            url.searchParams.delete('status');
+        }
+        
+        // Navigate to the updated URL
+        window.location.href = url.toString();
+    }
+
+    function deleteBooth(boothId) {
+      if (confirm('Are you sure you want to delete this toll booth? This action cannot be undone.')) {
+        // Send the delete request
+        fetch('${pageContext.request.contextPath}/TollBoothsController', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: 'action=deleteBooth&boothId=' + encodeURIComponent(boothId)
+        })
+        .then(response => response.text())
+        .then(data => {
+          // Refresh the page to show updated list
+          window.location.reload();
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('Failed to delete toll booth. Please try again.');
+        });
+      }
+    }
+  </script>
 </body>
 </html>

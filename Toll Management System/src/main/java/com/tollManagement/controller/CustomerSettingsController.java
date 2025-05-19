@@ -12,6 +12,8 @@ import com.tollManagement.service.UserSettingsService;
 
 /**
  * Servlet implementation class CustomerSettingsController
+ * @author Samir yadav
+ * @lmuId 23048505
  */
 @WebServlet(asyncSupported = true, urlPatterns = { "/CustomerSettingsController" })
 public class CustomerSettingsController extends HttpServlet {

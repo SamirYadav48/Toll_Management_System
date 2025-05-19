@@ -15,6 +15,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 /**
  * Servlet implementation class AdminProfileController
+ * @author Samir yadav
+ * @lmuId 23048505
  */
 @WebServlet(asyncSupported = true, urlPatterns = { "/AdminProfileController" })
 public class AdminProfileController extends HttpServlet {

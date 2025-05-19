@@ -9,6 +9,8 @@ import java.io.IOException;
 
 /**
  * Servlet implementation class SettingController
+ * @author Samir yadav
+ * @lmuId 23048505
  */
 @WebServlet(asyncSupported = true, urlPatterns = { "/SettingController" })
 public class SettingController extends HttpServlet {

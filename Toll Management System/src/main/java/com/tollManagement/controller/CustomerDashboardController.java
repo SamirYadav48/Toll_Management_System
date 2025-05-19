@@ -20,6 +20,8 @@ import com.google.gson.Gson;
 
 /**
  * Servlet implementation class CustomerDashboard
+ * @author Samir yadav
+ * @lmuId 23048505
  */
 @WebServlet(asyncSupported = true, urlPatterns = { "/CustomerDashboard" })
 public class CustomerDashboardController extends HttpServlet {

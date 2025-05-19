@@ -86,10 +86,7 @@
             <div class="content-header">
                 <h2>Toll Plaza Locations</h2>
                 <div class="map-controls">
-                    <div class="search-box">
-                        <i class="fas fa-search"></i>
-                        <input type="text" id="searchInput" placeholder="Search toll plazas...">
-                    </div>
+                    
                     <div class="filter-box">
                         <select id="provinceFilter">
                             <option value="">All Provinces</option>
@@ -116,14 +113,7 @@
                 <div class="toll-list">
                     <div class="list-header">
                         <h3>All Toll Plazas</h3>
-                        <div class="sort-options">
-                            <span>Sort by:</span>
-                            <select id="sortSelect">
-                                <option value="name">Alphabetical</option>
-                                <option value="status">Status</option>
-                                <option value="province">Province</option>
-                            </select>
-                        </div>
+                        
                     </div>
                     
                     <div class="toll-items">

@@ -222,40 +222,7 @@ body {
 }
 
 /* ========== HELP CENTER SPECIFIC STYLES ========== */
-.search-help {
-    display: flex;
-    max-width: 500px;
-    width: 100%;
-}
 
-.search-help input {
-    flex-grow: 1;
-    padding: 10px 15px;
-    border: 1px solid #ddd;
-    border-radius: 4px 0 0 4px;
-    border-right: none;
-    font-size: 1rem;
-    transition: border-color 0.3s;
-}
-
-.search-help input:focus {
-    outline: none;
-    border-color: #3498db;
-}
-
-.search-help button {
-    padding: 0 15px;
-    background: #3498db;
-    color: white;
-    border: none;
-    border-radius: 0 4px 4px 0;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-.search-help button:hover {
-    background-color: #2980b9;
-}
 
 .help-categories {
     display: grid;

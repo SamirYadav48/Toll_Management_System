@@ -18,6 +18,8 @@ import com.tollManagement.config.DbConfig;
 
 /**
  * Servlet implementation class TollLocationsController
+ * @author Samir yadav
+ * @lmuId 23048505
  */
 @WebServlet(asyncSupported = true, urlPatterns = { "/TollLocationsController" })
 public class TollLocationsController extends HttpServlet {

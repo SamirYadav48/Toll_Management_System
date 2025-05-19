@@ -9,6 +9,8 @@ import java.io.IOException;
 
 /**
  * Servlet implementation class HelpController
+ * @author Samir yadav
+ * @lmuId 23048505
  */
 @WebServlet(asyncSupported = true, urlPatterns = { "/HelpController" })
 public class HelpController extends HttpServlet {

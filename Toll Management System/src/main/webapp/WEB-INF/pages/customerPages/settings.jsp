@@ -113,7 +113,7 @@
             		</div>
             		<div class="form-group">
                		 	<label for="profile-phone">Phone Number</label>
-               		 	<input type="email" id="profile-email" value="${user.phone}" required>
+               		 	<input type="tel" id="profile-phone" value="${user.phone}" required>
             		</div>
            
         			</div>

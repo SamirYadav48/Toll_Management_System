@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,6 +10,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/adminPagesCss/customer.css"/>
+
 
 </head>
 <body>
@@ -56,10 +58,6 @@
         <h1>Customer Management</h1>
       </div>
       <div class="header-right">
-        <div class="search-box">
-          <input type="text" placeholder="Search customers..." id="searchInput"/>
-          <i class="fas fa-search"></i>
-        </div>
         <div class="user-profile" id="userProfile">
   					<a href="${pageContext.request.contextPath}/SettingController"><i class="fas fa-user"></i>
   					<span class="user-name">${user.firstName} ${user.lastName}</span>
@@ -75,128 +73,53 @@
       <!-- Customers Table -->
       <div class="table-container">
         
-        
         <table class="customers-table">
             <thead>
                 <tr>
-                  <th>Customer ID</th>
+                  <th>Username</th>
                   <th>Name</th>
                   <th>Email</th>
                   <th>Phone</th>
-                  <th>Vehicles</th>
-                  <th>Balance</th>
-                  <th>Status</th>
-                  <th>Joined</th>
+                  <th>Account Type</th>
+                  <th>Citizenship No.</th>
                   <th>Actions</th>
                 </tr>
               </thead>
           <tbody id="customersTableBody">
-            <!-- Example static row -->
-            <tr>
-              <td>CUST-NP-001</td>
-              <td>Suman Thapa</td>
-              <td>suman.thapa@pathpay.com</td>
-              <td>+977-9801234567</td>
-              <td>Ba 2 Kha 1123</td>
-              <td>रु 1,500.00</td>
-              <td><span class="status active">Active</span></td>
-              <td>2023-11-12</td>
-              <td>
-                <button class="btn-icon"><i class="fas fa-eye"></i></button>
-                <button class="btn-icon"><i class="fas fa-edit"></i></button>
-                <button class="btn-icon danger"><i class="fas fa-trash-alt"></i></button>
-              </td>
-            </tr>
-            <!-- Dynamic rows loaded via JS -->
+            <c:if test="${empty users}">
+              <tr>
+                <td colspan="8" class="text-center">No customers found</td>
+              </tr>
+            </c:if>
+            <c:forEach var="user" items="${users}">
+              <tr>
+                <td>${user.username}</td>
+                <td>${user.firstName} ${user.lastName}</td>
+                <td>${user.email}</td>
+                <td>${user.phone}</td>
+                <td>${user.accountType}</td>
+                <td>${user.citizenshipNumber}</td>
+                <td>
+                  <button class="delete-btn" onclick="deleteUser('${user.username}')">
+                    <i class="fas fa-trash"></i> Delete
+                  </button>
+                </td>
+              </tr>
+            </c:forEach>
           </tbody>
         </table>
       </div>
 
-      <!-- Pagination -->
-      <div class="pagination">
-        <button class="btn-pagination" id="prevPage" disabled><i class="fas fa-chevron-left"></i></button>
-        <div class="page-numbers" id="pageNumbers"></div>
-        <button class="btn-pagination" id="nextPage"><i class="fas fa-chevron-right"></i></button>
-      </div>
+      
     </div>
   </main>
 
-  <!-- Customer Detail Modal -->
-  <div class="modal" id="customerDetailModal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3>Customer Details</h3>
-        <button class="close-modal">&times;</button>
-      </div>
-      <div class="modal-body">
-        <div class="customer-profile">
-          <div class="profile-header">
-            <div class="avatar">
-              <img src="customer-avatar.jpg" alt="Customer Avatar" id="detailAvatar"/>
-              <span class="status" id="detailStatus">Active</span>
-            </div>
-            <h2 id="detailName">Aayush Karki</h2>
-            <p class="customer-id" id="detailId">CUST-NP-005</p>
-          </div>
-
-          <div class="detail-section">
-            <h4>Account Information</h4>
-            <div class="detail-row">
-              <span class="detail-label">Email:</span>
-              <span class="detail-value" id="detailEmail">aayush.karki@example.com</span>
-            </div>
-            <div class="detail-row">
-              <span class="detail-label">Phone:</span>
-              <span class="detail-value" id="detailPhone">+977-9812345678</span>
-            </div>
-            <div class="detail-row">
-              <span class="detail-label">Account Balance:</span>
-              <span class="detail-value" id="detailBalance">रु 875.00</span>
-            </div>
-            <div class="detail-row">
-              <span class="detail-label">Account Status:</span>
-              <span class="detail-value" id="detailStatusText">Active</span>
-            </div>
-            <div class="detail-row">
-              <span class="detail-label">Joined Date:</span>
-              <span class="detail-value" id="detailJoined">2024-05-21</span>
-            </div>
-          </div>
-
-          <div class="detail-section">
-            <h4>Registered Vehicles</h4>
-            <div class="vehicles-list" id="vehiclesList">
-              <!-- Example vehicle -->
-              <div class="vehicle-item">Ba 3 Cha 5678 - Hyundai i20</div>
-            </div>
-          </div>
-
-          <div class="modal-actions">
-            <button class="btn btn-secondary close-modal">Close</button>
-            <button class="btn btn-danger" id="suspendBtn">Suspend Account</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Delete Confirmation Modal -->
-  <div class="modal" id="deleteModal">
-    <div class="modal-content small">
-      <div class="modal-header">
-        <h3>Confirm Deletion</h3>
-        <button class="close-modal">&times;</button>
-      </div>
-      <div class="modal-body">
-        <p>Are you sure you want to delete this customer account? This action cannot be undone.</p>
-        <div class="modal-actions">
-          <button class="btn btn-secondary close-modal">Cancel</button>
-          <button class="btn btn-danger" id="confirmDelete">Delete Permanently</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <script src="/chapter 1/customer.js"></script>
+  <script>
+    function deleteUser(username) {
+      if (confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
+        window.location.href = '${pageContext.request.contextPath}/CustomerController?action=delete&username=' + username;
+      }
+    }
+  </script>
 </body>
 </html>

@@ -68,10 +68,7 @@
                 <h1>Dashboard Overview</h1>
             </div>
             <div class="header-right">
-                <div class="search-box">
-                    <input type="text" placeholder="Search...">
-                    <i class="fas fa-search"></i>
-                </div>
+                
                 <div class="user-profile" id="userProfile">
                     <a href="${pageContext.request.contextPath}/SettingController"><i class="fas fa-user"></i>
                     <span class="user-name">${user.firstName} ${user.lastName}</span>

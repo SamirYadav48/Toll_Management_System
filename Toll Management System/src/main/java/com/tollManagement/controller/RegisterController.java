@@ -1,6 +1,7 @@
 package com.tollManagement.controller;
 
 import java.io.IOException;
+
 import com.tollManagement.util.ValidationUtil;
 import com.tollManagement.model.UserModel;
 import com.tollManagement.model.VehicleModel;
@@ -12,6 +13,11 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+/**
+ * Servlet implementation class RegisterController
+ * @author Samir yadav
+ * @lmuId 23048505
+ */
 @WebServlet(asyncSupported = true, urlPatterns = { "/register" })
 public class RegisterController extends HttpServlet {
     private static final long serialVersionUID = 1L;

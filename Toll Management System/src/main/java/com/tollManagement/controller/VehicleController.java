@@ -19,6 +19,12 @@ import java.text.SimpleDateFormat;
 
 import java.util.List;
 
+
+/**
+ * Servlet implementation class VehicleController
+ * @author Samir yadav
+ * @lmuId 23048505
+ */
 @WebServlet(asyncSupported = true, urlPatterns = { "/VehicleController", "/VehicleController/*" })
 public class VehicleController extends HttpServlet {
     private static final long serialVersionUID = 1L;
